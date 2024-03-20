@@ -1,5 +1,5 @@
 
-export const serializeDays = (selectedDays) => {
+export const daysOfWeekToSQLiteInteger = (selectedDays) => {
   let cnt = 0;
   for (let i=0; i<7; i++){
     if (selectedDays[i] === true){
@@ -9,7 +9,7 @@ export const serializeDays = (selectedDays) => {
   return cnt;
 }
 
-export const deserializeDays = (num) => {
+export const SQLiteIntegerToDaysOfWeek = (num) => {
   let selectedDays = new Array(7).fill(false);
   for (let i=0; i<7; i++){
     if (num & 1 << i){

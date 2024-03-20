@@ -1,18 +1,26 @@
-import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Switch, Text, Alert } from 'react-native';
+import React from 'react';
+import { View, TextInput, Button, Text, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { addTasks } from '../utils/TaskDatabase';
-import { convertToSQLiteDateTime, serializeDays } from '../utils/SupportDataBaseIO';
+import { convertToSQLiteDateTime, daysOfWeekToSQLiteInteger } from '../utils/SupportDataBaseIO';
+import useTaskState from '../utils/useTaskState';
+import { taskDetailStyles } from '../styles/taskDetailStyle';
 
 const daysOfWeek = ['日', '月', '火', '水', '木', '金', '土'];
+const styles = taskDetailStyles
 
 const TaskDetailScreen = ({ navigation }) => {
-  const [taskName, setTaskName] = useState('');
-  const [startTime, setStartTime] = useState(new Date());
-  const [endTime, setEndTime] = useState(new Date());
-  const [repeat, setRepeat] = useState(false);
-  const [selectedDays, setSelectedDays] = useState(new Array(7).fill(false));
+  const {
+    taskName,
+    setTaskName,
+    startTime,
+    setStartTime,
+    endTime,
+    setEndTime,
+    selectedDays,
+    setSelectedDays
+  } = useTaskState();
 
   const toggleDay = (index) => {
     const updatedDays = [...selectedDays];
@@ -25,20 +33,16 @@ const TaskDetailScreen = ({ navigation }) => {
       taskName,
       convertToSQLiteDateTime(startTime),
       convertToSQLiteDateTime(endTime),
-      serializeDays(selectedDays),
+      daysOfWeekToSQLiteInteger(selectedDays),
       0
     ];
-    const insertSQL = `
-      INSERT INTO tasks (name, startTime, endTime, repeatDay, status)
-      VALUES (?, ?, ?, ?, ?)
-    `;
-    addTasks(insertSQL, values)
+    addTasks(values)
     .then(() => {
       Alert.alert('Success', 'Task added successfully!');
       navigation.goBack();
     })
     .catch(error => {
-      Alert.alert('Error', 'Failed to save the task.'+ error);
+      Alert.alert('Error', 'Failed to save the task.\n'+ error);
     });
   };
 
@@ -75,48 +79,10 @@ const TaskDetailScreen = ({ navigation }) => {
           </Text>
         ))}
       </View>
-      <View style={styles.switchContainer}>
-        <Text>Repeat</Text>
-        <Switch value={repeat} onValueChange={setRepeat} />
-      </View>
       <Button title="OK" onPress={handleSaveTask} color="#007AFF" />
       <Button title="Cancel" onPress={() => navigation.goBack()} color="#666" />
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    padding: 10,
-    marginBottom: 20,
-    borderRadius: 5,
-  },
-  daysContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 20,
-  },
-  dayButton: {
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 20,
-  },
-  selectedDayButton: {
-    backgroundColor: '#ddd',
-  },
-  switchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-    justifyContent: 'space-between',
-  },
-});
 
 export default TaskDetailScreen;

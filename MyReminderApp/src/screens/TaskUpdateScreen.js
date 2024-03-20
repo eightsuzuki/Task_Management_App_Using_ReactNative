@@ -1,23 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, StyleSheet, Switch, Text, Alert } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { View, TextInput, Button, Text, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useRoute } from '@react-navigation/native';
 
 import { loadTask, updateCurrentTask } from '../utils/TaskDatabase';
-import { convertFromSQLiteDateTime, convertToSQLiteDateTime, deserializeDays, serializeDays } from '../utils/SupportDataBaseIO';
+import { convertFromSQLiteDateTime, convertToSQLiteDateTime, daysOfWeekToSQLiteInteger, SQLiteIntegerToDaysOfWeek } from '../utils/SupportDataBaseIO';
+import useTaskState from '../utils/useTaskState';
+import { taskDetailStyles } from '../styles/taskDetailStyle';
 
 const daysOfWeek = ['日', '月', '火', '水', '木', '金', '土'];
+const styles = taskDetailStyles
 
 const TaskUpdateScreen = ({ navigation }) => {
   const route = useRoute();
   const { updateTaskId } = route.params;
   const [updateTask, setUpdateTask] = useState(null);
-  const [taskName, setTaskName] = useState('');
-  const [repeat, setRepeat] = useState(false);
-  const [startTime, setStartTime] = useState(new Date());
-  const [endTime, setEndTime] = useState(new Date());
-  const [selectedDays, setSelectedDays] = useState(new Array(7).fill(false));
+  const {
+    taskName,
+    setTaskName,
+    startTime,
+    setStartTime,
+    endTime,
+    setEndTime,
+    selectedDays,
+    setSelectedDays
+  } = useTaskState();
   
 useEffect(() => {
   const fetchData = async () => {
@@ -28,14 +35,13 @@ useEffect(() => {
       setTaskName(task.name);
       setStartTime(convertFromSQLiteDateTime(task.startTime));
       setEndTime(convertFromSQLiteDateTime(task.endTime));
-      setRepeat(task.repeat === 1);
-      setSelectedDays(deserializeDays(task.repeatDay));
+      setSelectedDays(SQLiteIntegerToDaysOfWeek(task.repeatDay));
     }
   };
-  
 
   fetchData();
 }, [updateTaskId]);
+
 if (!updateTask) {
   return <Text>loading ...</Text>;
 }
@@ -51,16 +57,11 @@ if (!updateTask) {
       taskName,
       convertToSQLiteDateTime(startTime),
       convertToSQLiteDateTime(endTime),
-      serializeDays(selectedDays),
+      daysOfWeekToSQLiteInteger(selectedDays),
       0,
       updateTaskId
     ];
-    const updateSQL = `
-      UPDATE tasks \
-      SET name = ?, startTime = ?, endTime = ?, repeatDay = ?, status = ? \
-      WHERE id = ?
-    `;
-    updateCurrentTask(updateSQL, values)
+    updateCurrentTask(values)
     .then(() => {
       Alert.alert('Success', 'Task updated successfully!');
       navigation.goBack();
@@ -108,39 +109,5 @@ if (!updateTask) {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    padding: 10,
-    marginBottom: 20,
-    borderRadius: 5,
-  },
-  daysContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 20,
-  },
-  dayButton: {
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 20,
-  },
-  selectedDayButton: {
-    backgroundColor: '#ddd',
-  },
-  switchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-    justifyContent: 'space-between',
-  },
-});
 
 export default TaskUpdateScreen;

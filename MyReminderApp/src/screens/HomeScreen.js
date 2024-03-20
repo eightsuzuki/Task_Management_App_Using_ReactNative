@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';

@@ -69,11 +69,14 @@ export const deleteSelectedTask = (id) => {
   });
 };
 
-export const addTasks = (insertSQL, values) => {
+export const addTasks = (values) => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
-        insertSQL,
+        `
+        INSERT INTO tasks (name, startTime, endTime, repeatDay, status)
+        VALUES (?, ?, ?, ?, ?)
+        `,
         values,
         (_, result) => {
           resolve(result);
@@ -86,11 +89,15 @@ export const addTasks = (insertSQL, values) => {
   });
 };
 
-export const updateCurrentTask = (updateSQL, values) => {
+export const updateCurrentTask = (values) => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
-        updateSQL,
+        `
+      UPDATE tasks \
+      SET name = ?, startTime = ?, endTime = ?, repeatDay = ?, status = ? \
+      WHERE id = ?
+    `,
         values,
         (_, result) => {
           resolve(result);
