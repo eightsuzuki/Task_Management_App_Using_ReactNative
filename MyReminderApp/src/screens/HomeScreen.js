@@ -1,8 +1,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AntDesign } from '@expo/vector-icons';
+
+import { loadNonCompletionTasks, deleteSelectedTask } from '../utils/TaskDatabase';
 
 const daysOfWeek = ['日', '月', '火', '水', '木', '金', '土'];
 
@@ -16,22 +17,22 @@ function HomeScreen({ navigation }) {
   }, []);
 
   const loadTasks = async () => {
-    try {
-      const tasksString = await AsyncStorage.getItem('tasks');
-      const loadedTasks = tasksString ? JSON.parse(tasksString) : [];
-      setTasks(loadedTasks);
-    } catch (e) {
-      Alert.alert("Error", "Failed to load tasks.");
-    }
+    loadNonCompletionTasks()
+    .then(tasks => {
+      setTasks(tasks);
+    })
+    .catch(error => {
+      Alert.alert("Error", error.message);
+    });
   };
 
   const deleteTask = async (id) => {
     try {
-      const newTasks = tasks.filter(task => task.id !== id);
-      await AsyncStorage.setItem('tasks', JSON.stringify(newTasks));
+      await deleteSelectedTask(id);
+      newTasks = await loadTasks();
       setTasks(newTasks);
-    } catch (e) {
-      Alert.alert("Error", "Failed to delete the task.");
+    } catch (error) {
+      Alert.alert("Error", error.message);
     }
   };
 
@@ -44,9 +45,14 @@ function HomeScreen({ navigation }) {
           <View style={styles.taskItem}>
             <View>
               <Text style={styles.taskText}>{item.name}</Text>
-              <Text>{`Time: ${item.startTime} - ${item.endTime}`}</Text>
-              <Text>{`Repeat: ${item.repeat ? daysOfWeek.filter((day, index) => item.repeatDay && item.repeatDay[index]).map((day, index) => daysOfWeek[index]).join('・') : 'No Repeat'}`}</Text>
+              <Text>{`Time: ${item.startTime}`}</Text>
+              <Text>
+                {`Repeat: ${item.repeat ? daysOfWeek.filter((day, index) => item.repeatDay && item.repeatDay[index]).map((day, index) => daysOfWeek[index]).join('・') : 'No Repeat'}`}
+              </Text>
             </View>
+            <TouchableOpacity onPress={() => navigation.navigate('TaskUpdate', { updateTaskId: item.id})}>
+              <AntDesign name="edit" size={24} color="blue" />
+            </TouchableOpacity>
             <TouchableOpacity onPress={() => deleteTask(item.id)}>
               <AntDesign name="delete" size={24} color="red" />
             </TouchableOpacity>
