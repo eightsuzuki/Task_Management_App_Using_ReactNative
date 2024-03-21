@@ -33,8 +33,11 @@ function LoginScreen({ navigation }) {
         value={password}
         onChangeText={setPassword}
         secureTextEntry
-      />
-      <Button title="Login" onPress={handleLogin} />
+      />            
+      <View style={styles.buttonContainer}>
+        <Button title="Login" onPress={handleLogin} color="white" />
+      </View>
+    
     </View>
   );
 }
@@ -45,6 +48,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+    backgroundColor: "#D9D9D9",
   },
   input: {
     width: '100%',
@@ -52,7 +56,12 @@ const styles = StyleSheet.create({
     padding: 10,
     borderWidth: 1,
     borderRadius: 5,
-    borderColor: '#ddd',
+    borderColor: 'black',
+  },
+  buttonContainer: {
+    backgroundColor: "#2D3F45", // ボタンの背景色を白に設定
+    borderRadius: 24,
+    overflow: "hidden",
   },
 });
 
