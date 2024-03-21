@@ -16,8 +16,15 @@ import { createUsersTable } from '../utils/UserDatabase';
 const Stack = createStackNavigator();
 
 function AppNavigation() {
-  createTable();
-  createUsersTable();
+  useEffect(() => {
+    createTable();
+    taskStatusUpdate();
+    createUsersTable();
+
+    return () => {
+      clearInterval(taskStatusUpdate);
+    };
+  }, []); 
   
   return (
     <NavigationContainer>
