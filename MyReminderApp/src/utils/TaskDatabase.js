@@ -2,6 +2,25 @@ import * as SQLite from 'expo-sqlite';
 
 export const db = SQLite.openDatabase('tasks.db');
 
+export const dropTasksTable = () => {
+  console.log('drop all');
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'DROP TABLE IF EXISTS tasks',
+        [],
+        () => {
+          resolve();
+        },
+        (_, error) => {
+          reject(new Error("Failed to drop tasks table: " + error.message));
+        }
+      );
+    });
+  });
+};
+
+
 export const createTable = () => {
   db.transaction(tx => {
     tx.executeSql(
@@ -9,10 +28,11 @@ export const createTable = () => {
       tasks(\
         id INTEGER PRIMARY KEY AUTOINCREMENT,\
         name TEXT, \
-        startTime DATETIME, \
-        endTime TEXT, \
-        repeatDay INTEGER, \
-        status INTEGER \
+        starttime DATETIME, \
+        endtime TEXT, \
+        repeatday INTEGER, \
+        status INTEGER, \
+        isnotification INTEGER \
         )'
     );
   });
@@ -22,7 +42,24 @@ export const loadNonCompletionTasks = () => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
-        'SELECT * FROM tasks',
+        'SELECT * FROM tasks WHERE status = 0',
+        [],
+        (_, { rows: { _array } }) => {
+          resolve(_array);
+        },
+        (_, error) => {
+          reject(new Error("Failed to load tasks: " + error.message));
+        }
+      );
+    });
+  });
+};
+
+export const loadCompletedTasks = () => {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'SELECT * FROM tasks WHERE status = 1',
         [],
         (_, { rows: { _array } }) => {
           resolve(_array);
@@ -74,8 +111,8 @@ export const addTasks = (values) => {
     db.transaction(tx => {
       tx.executeSql(
         `
-        INSERT INTO tasks (name, startTime, endTime, repeatDay, status)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO tasks (name, starttime, endtime, repeatday, status, isnotification)
+        VALUES (?, ?, ?, ?, ?, ?)
         `,
         values,
         (_, result) => {
@@ -95,7 +132,7 @@ export const updateCurrentTask = (values) => {
       tx.executeSql(
         `
       UPDATE tasks \
-      SET name = ?, startTime = ?, endTime = ?, repeatDay = ?, status = ? \
+      SET name = ?, starttime = ?, endtime = ?, repeatday = ?, status = ? , isnotification = ?\
       WHERE id = ?
     `,
         values,
@@ -104,6 +141,27 @@ export const updateCurrentTask = (values) => {
         },
         (_, error) => {
           reject(new Error("Failed to update task: " + error.message));
+        }
+      );
+    });
+  });
+};
+
+export const changeTaskStatus = (values) => {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        `
+        UPDATE tasks \
+        SET status = ? \
+        WHERE id = ?
+        `,
+        values,
+        (_, result) => {
+          resolve(result);
+        },
+        (_, error) => {
+          reject(new Error("Failed to change status: " + error.message));
         }
       );
     });

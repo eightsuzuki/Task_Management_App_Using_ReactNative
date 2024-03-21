@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, Text, Alert } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { Text, Alert } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 
 import { loadTask, updateCurrentTask } from '../utils/TaskDatabase';
 import { convertFromSQLiteDateTime, convertToSQLiteDateTime, daysOfWeekToSQLiteInteger, SQLiteIntegerToDaysOfWeek } from '../utils/SupportDataBaseIO';
-import useTaskState from '../utils/useTaskState';
+import useTaskState, { daysOfWeek }from '../utils/useTaskState';
+import TaskForm from '../styles/TaskForm';
 import { taskDetailStyles } from '../styles/taskDetailStyle';
 
-const daysOfWeek = ['日', '月', '火', '水', '木', '金', '土'];
-const styles = taskDetailStyles
 
 const TaskUpdateScreen = ({ navigation }) => {
   const route = useRoute();
@@ -23,7 +21,9 @@ const TaskUpdateScreen = ({ navigation }) => {
     endTime,
     setEndTime,
     selectedDays,
-    setSelectedDays
+    setSelectedDays,
+    isNotification,
+    setIsNotification
   } = useTaskState();
   
 useEffect(() => {
@@ -33,9 +33,10 @@ useEffect(() => {
       const task = loadedTask[0];
       setUpdateTask(task);
       setTaskName(task.name);
-      setStartTime(convertFromSQLiteDateTime(task.startTime));
-      setEndTime(convertFromSQLiteDateTime(task.endTime));
-      setSelectedDays(SQLiteIntegerToDaysOfWeek(task.repeatDay));
+      setStartTime(convertFromSQLiteDateTime(task.starttime));
+      setEndTime(convertFromSQLiteDateTime(task.endtime));
+      setSelectedDays(SQLiteIntegerToDaysOfWeek(task.repeatday));
+      setIsNotification(task.isnotification === 1);
     }
   };
 
@@ -59,6 +60,7 @@ if (!updateTask) {
       convertToSQLiteDateTime(endTime),
       daysOfWeekToSQLiteInteger(selectedDays),
       0,
+      isNotification & 1,
       updateTaskId
     ];
     updateCurrentTask(values)
@@ -72,41 +74,22 @@ if (!updateTask) {
   };
 
   return (
-    <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        onChangeText={setTaskName}
-        value={taskName}
-        placeholder="Routine name"
-      />
-      <Text>Start Time:</Text>
-      <DateTimePicker
-        testID="startTimePicker"
-        value={startTime}
-        mode="time"
-        is24Hour={true}
-        display="default"
-        onChange={(event, selectedTime) => setStartTime(selectedTime || startTime)}
-      />
-      <Text>End Time:</Text>
-      <DateTimePicker
-        testID="endTimePicker"
-        value={endTime}
-        mode="time"
-        is24Hour={true}
-        display="default"
-        onChange={(event, selectedTime) => setEndTime(selectedTime || endTime)}
-      />
-      <View style={styles.daysContainer}>
-        {daysOfWeek.map((day, index) => (
-          <Text key={index} onPress={() => toggleDay(index)} style={[styles.dayButton, selectedDays[index] && styles.selectedDayButton]}>
-            {day}
-          </Text>
-        ))}
-      </View>
-      <Button title="OK" onPress={handleSaveTask} color="#007AFF" />
-      <Button title="Cancel" onPress={() => navigation.goBack()} color="#666" />
-    </View>
+    <TaskForm
+      styles={taskDetailStyles}
+      taskName={taskName}
+      setTaskName={setTaskName}
+      startTime={startTime}
+      setStartTime={setStartTime}
+      endTime={endTime}
+      setEndTime={setEndTime}
+      daysOfWeek={daysOfWeek}
+      selectedDays={selectedDays}
+      toggleDay={toggleDay}
+      isNotification={isNotification}
+      setIsNotification={setIsNotification}
+      handleSaveTask={handleSaveTask}
+      navigation={navigation}
+    />
   );
 };
 

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert, Switch } from 'react-native';
-import { AntDesign, Octicons } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 import * as Notifications from 'expo-notifications';
 
-import { loadNonCompletionTasks, deleteSelectedTask, changeTaskStatus } from '../utils/TaskDatabase';
+import { deleteSelectedTask, changeTaskStatus, loadCompletedTasks } from '../utils/TaskDatabase';
 
-const daysOfWeek = ['日', '月', '火', '水', '木', '金', '土'];
+const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-function HomeScreen({ navigation }) {
+function CompleteTaskList({ navigation }) {
   const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
@@ -18,7 +18,7 @@ function HomeScreen({ navigation }) {
   }, []);
 
   const loadTasks = async () => {
-    loadNonCompletionTasks()
+    loadCompletedTasks()
     .then(tasks => {
       setTasks(tasks);
     })
@@ -66,8 +66,7 @@ function HomeScreen({ navigation }) {
             <View>
               <Text style={styles.taskText}>{item.name}</Text>
               <Text>{`Time: ${item.starttime}`}</Text>
-              
-              <Text>{`Repeat: ${item.repeat ? daysOfWeek.filter((day, index) => item.repeatDay && item.repeatDay[index]).map((day, index) => daysOfWeek[index]).join('・') : 'No Repeat'}`}</Text>
+              <Text>{`Repeat: ${item.repeat ? daysOfWeek.filter((day, index) => item.repeatday && item.repeatday[index]).map((day, index) => daysOfWeek[index]).join('・') : 'No Repeat'}`}</Text>
             </View>
             <View style={styles.switchContainer}>
               <Text>Status</Text>
@@ -84,9 +83,9 @@ function HomeScreen({ navigation }) {
       />
       <TouchableOpacity 
         style={styles.taskList} 
-        onPress={() => navigation.navigate('CompleteTaskList')}
+        onPress={() => navigation.navigate('Home')}
       >
-        <Octicons name="tasklist" size={60} color="black" />
+        <AntDesign name="home" size={60} color="black" />
       </TouchableOpacity>
       <TouchableOpacity 
         style={styles.addButton} 
@@ -164,4 +163,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default CompleteTaskList;

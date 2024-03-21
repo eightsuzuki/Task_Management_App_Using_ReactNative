@@ -7,6 +7,7 @@ import LoginScreen from '../screens/LoginScreen';
 import TaskDetailScreen from '../screens/TaskDetailScreen';
 import TaskUpdateScreen from '../screens/TaskUpdateScreen';
 import { createTable } from '../utils/TaskDatabase';
+import CompleteTaskList from '../screens/CompleteTaskList';
 
 const Stack = createStackNavigator();
 
@@ -16,6 +17,7 @@ function AppNavigation() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="CompleteTaskList" component={CompleteTaskList} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="TaskDetail" component={TaskDetailScreen} />
         <Stack.Screen name="TaskUpdate" component={TaskUpdateScreen} />
