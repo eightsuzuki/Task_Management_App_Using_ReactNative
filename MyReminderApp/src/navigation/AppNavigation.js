@@ -1,6 +1,8 @@
-import React, { useEffect } from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
+import React, { useEffect } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import * as Notifications from 'expo-notifications';
+
 
 import HomeScreen from '../screens/HomeScreen';
 import LoginScreen from '../screens/LoginScreen';
@@ -22,12 +24,22 @@ function AppNavigation() {
     createTable();
     taskStatusUpdate();
     createUsersTable();
+    registerForPushNotificationsAsync();
 
     return () => {
       clearInterval(taskStatusUpdate);
     };
-
   }, []);
+
+  const registerForPushNotificationsAsync = async () => {
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: false,
+      }),
+    });
+  };
 
   return (
     <NavigationContainer>
