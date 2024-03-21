@@ -4,8 +4,8 @@ import { AntDesign, Octicons } from '@expo/vector-icons';
 import * as Notifications from 'expo-notifications';
 
 import { loadNonCompletionTasks, deleteSelectedTask, changeTaskStatus } from '../utils/TaskDatabase';
+import { daysOfWeek } from '../utils/useTaskState';
 
-const daysOfWeek = ['日', '月', '火', '水', '木', '金', '土'];
 
 function HomeScreen({ navigation }) {
   const [tasks, setTasks] = useState([]);
