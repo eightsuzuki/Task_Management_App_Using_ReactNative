@@ -16,7 +16,7 @@ function TitleScreen({ navigation }) {
               <Button
                 title="Sign In"
                 onPress={() => navigation.navigate("SignIn")}
-                color="#000000"
+                                color="#000000"
                 fontWeight="bold"
               />
             </View>
