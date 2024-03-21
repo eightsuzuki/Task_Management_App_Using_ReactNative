@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -8,11 +8,19 @@ import TaskDetailScreen from '../screens/TaskDetailScreen';
 import TaskUpdateScreen from '../screens/TaskUpdateScreen';
 import { createTable } from '../utils/TaskDatabase';
 import CompleteTaskList from '../screens/CompleteTaskList';
+import taskStatusUpdate from '../utils/TaskStatusUpdate';
 
 const Stack = createStackNavigator();
 
 function AppNavigation() {
-  createTable();
+  useEffect(() => {
+    createTable();
+    taskStatusUpdate();
+
+    return () => {
+      clearInterval(taskStatusUpdate);
+    };
+  }, []);
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
