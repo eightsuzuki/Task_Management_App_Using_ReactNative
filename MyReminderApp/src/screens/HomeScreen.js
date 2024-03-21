@@ -48,17 +48,19 @@ function HomeScreen({ navigation }) {
   const deleteTask = async (id) => {
     try {
       await deleteSelectedTask(id);
-      loadTasks();
+      newTasks = await loadTasks();
+      setTasks(newTasks);
     } catch (error) {
       Alert.alert("Error", error.message);
     }
   };
 
   const statusUpdate = async (newStatus, id) => {
-    const values = [newStatus ? 1 : 0, id];
+    values = [newStatus ? 1: 0, id];
     try {
       await changeTaskStatus(values);
-      loadTasks();
+      newTasks = await loadTasks();
+      setTasks(newTasks);
     } catch (error) {
       Alert.alert("Error", error.message);
     }
@@ -67,6 +69,7 @@ function HomeScreen({ navigation }) {
   const requestPermissionsAsync = async () => {
     const { granted } = await Notifications.getPermissionsAsync();
     if (granted) { return }
+  
     await Notifications.requestPermissionsAsync();
   }
 
