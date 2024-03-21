@@ -1,23 +1,28 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import { loadUser } from '../utils/UserDatabase';
+import { addUser } from '../utils/UserDatabase';
 
-function LoginScreen({ navigation }) {
+function SignInScreen({ navigation }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = async () => {
+  const handleSignIn = async () => {
+    // Ensure username and password are not empty
+    if (!username.trim() || !password) {
+      Alert.alert('Invalid Input', 'Please enter both a username and a password.');
+      return;
+    }
+    
+    // Attempt to add the new user
     try {
-      const users = await loadUser(username);
-      if (users.length === 1 && users[0].password === password) {
-        navigation.navigate('Home');
-      } else {
-        Alert.alert('Invalid Login', 'The username or password you entered is incorrect.');
-      }
+      await addUser([username, password]);
+      Alert.alert('Success', 'Account created successfully. Please log in.');
+      navigation.navigate('Login');
     } catch (error) {
-      Alert.alert('Login Failed', 'An error occurred during login. Please try again.');
+      Alert.alert('Error', 'Could not create account. The username may already exist.');
     }
   };
+
 
   return (
     <View style={styles.container}>
@@ -34,7 +39,7 @@ function LoginScreen({ navigation }) {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title="Login" onPress={handleLogin} />
+      <Button title="Sign In" onPress={handleSignIn} />
     </View>
   );
 }
@@ -56,4 +61,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginScreen;
+export default SignInScreen;

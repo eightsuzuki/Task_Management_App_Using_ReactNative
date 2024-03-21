@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert, Switch } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert, Switch, Button } from 'react-native';
 import { AntDesign, Octicons } from '@expo/vector-icons';
 import * as Notifications from 'expo-notifications';
 
@@ -11,11 +11,29 @@ function HomeScreen({ navigation }) {
   const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
-    navigation.addListener('focus', () => {
+    const unsubscribe = navigation.addListener('focus', () => {
       loadTasks();
       requestPermissionsAsync();
     });
-  }, []);
+
+    // ヘッダーにログアウトボタンを設定
+    navigation.setOptions({
+      headerRight: () => (
+        <Button
+          onPress={() => {
+            // ログアウト処理をここに書く
+            Alert.alert('Logout', 'You have been logged out.', [
+              { text: 'OK', onPress: () => navigation.navigate('Title') } // 'LoginScreen'は適宜変更してください
+            ]);
+          }}
+          title="Logout"
+          color="#000"
+        />
+      )
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   const loadTasks = async () => {
     loadNonCompletionTasks()
@@ -30,29 +48,25 @@ function HomeScreen({ navigation }) {
   const deleteTask = async (id) => {
     try {
       await deleteSelectedTask(id);
-      newTasks = await loadTasks();
-      setTasks(newTasks);
+      loadTasks();
     } catch (error) {
       Alert.alert("Error", error.message);
     }
   };
 
   const statusUpdate = async (newStatus, id) => {
-    values = [newStatus ? 1: 0, id];
+    const values = [newStatus ? 1 : 0, id];
     try {
       await changeTaskStatus(values);
-      newTasks = await loadTasks();
-      setTasks(newTasks);
+      loadTasks();
     } catch (error) {
       Alert.alert("Error", error.message);
     }
-    
   }
 
   const requestPermissionsAsync = async () => {
     const { granted } = await Notifications.getPermissionsAsync();
     if (granted) { return }
-  
     await Notifications.requestPermissionsAsync();
   }
 
