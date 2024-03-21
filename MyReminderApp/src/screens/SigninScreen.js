@@ -7,13 +7,13 @@ function SignInScreen({ navigation }) {
   const [password, setPassword] = useState('');
 
   const handleSignIn = async () => {
-    // Ensure username and password are not empty
+
     if (!username.trim() || !password) {
       Alert.alert('Invalid Input', 'Please enter both a username and a password.');
       return;
     }
     
-    // Attempt to add the new user
+
     try {
       await addUser([username, password]);
       Alert.alert('Success', 'Account created successfully. Please log in.');
@@ -39,7 +39,9 @@ function SignInScreen({ navigation }) {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title="Sign In" onPress={handleSignIn} />
+      <View style={styles.buttonContainer}>
+        <Button title="Sign In" onPress={handleSignIn} color="white" />
+      </View>
     </View>
   );
 }
@@ -50,6 +52,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+    backgroundColor: "#D9D9D9",
+
   },
   input: {
     width: '100%',
@@ -57,7 +61,13 @@ const styles = StyleSheet.create({
     padding: 10,
     borderWidth: 1,
     borderRadius: 5,
-    borderColor: '#ddd',
+    borderColor: 'black',
+  },
+  buttonContainer: {
+    backgroundColor: "#2D3F45", // ボタンの背景色を変更
+    borderRadius: 24,
+    overflow: "hidden",
+
   },
 });
 

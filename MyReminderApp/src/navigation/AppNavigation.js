@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as Notifications from 'expo-notifications';
 
+
 import HomeScreen from '../screens/HomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import SignInScreen from '../screens/SigninScreen';
@@ -14,6 +15,7 @@ import CompleteTaskList from '../screens/CompleteTaskList';
 import { createTable } from '../utils/TaskDatabase';
 import { createUsersTable } from '../utils/UserDatabase';
 import taskStatusUpdate from '../utils/TaskStatusUpdate';
+
 
 const Stack = createStackNavigator();
 
@@ -41,8 +43,24 @@ function AppNavigation() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Title">
-        <Stack.Screen name="Title" component={TitleScreen} options={{ headerShown: false }} />
+      <Stack.Navigator
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: "#6A6A6A", // ヘッダーの背景色を設定
+          },
+          headerTintColor: "#FFF", // ヘッダーのテキスト色を設定
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+        initialRouteName="Title"
+      >
+        <Stack.Screen
+          name="Title"
+          component={TitleScreen}
+          options={{ headerShown: false }}
+        />
+
         <Stack.Screen name="SignIn" component={SignInScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
