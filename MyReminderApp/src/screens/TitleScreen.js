@@ -1,3 +1,4 @@
+
 import React from "react";
 import { View, Button, StyleSheet, ImageBackground, Text } from "react-native";
 
@@ -32,6 +33,7 @@ function TitleScreen({ navigation }) {
         </View>
       </View>
     </ImageBackground>
+
   );
 }
 
@@ -77,6 +79,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#D9D9D9", // ボタンの背景色を白に設定
     borderRadius: 24,
     overflow: "hidden",
+
   },
 });
 

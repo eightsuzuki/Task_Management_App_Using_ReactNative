@@ -7,11 +7,13 @@ function SignInScreen({ navigation }) {
   const [password, setPassword] = useState('');
 
   const handleSignIn = async () => {
+
     if (!username.trim() || !password) {
       Alert.alert('Invalid Input', 'Please enter both a username and a password.');
       return;
     }
     
+
     try {
       await addUser([username, password]);
       Alert.alert('Success', 'Account created successfully. Please log in.');
@@ -51,6 +53,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     backgroundColor: "#D9D9D9",
+
   },
   input: {
     width: '100%',
@@ -64,6 +67,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#2D3F45", // ボタンの背景色を変更
     borderRadius: 24,
     overflow: "hidden",
+
   },
 });
 

@@ -2,17 +2,18 @@ import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
-import HomeScreen from "../screens/HomeScreen";
-import LoginScreen from "../screens/LoginScreen";
-import SignInScreen from "../screens/SigninScreen";
-import TitleScreen from "../screens/TitleScreen";
-import TaskDetailScreen from "../screens/TaskDetailScreen";
-import TaskUpdateScreen from "../screens/TaskUpdateScreen";
-import CompleteTaskList from "../screens/CompleteTaskList";
+import HomeScreen from '../screens/HomeScreen';
+import LoginScreen from '../screens/LoginScreen';
+import SignInScreen from '../screens/SigninScreen';
+import TitleScreen from '../screens/TitleScreen';
+import TaskDetailScreen from '../screens/TaskDetailScreen';
+import TaskUpdateScreen from '../screens/TaskUpdateScreen';
+import CompleteTaskList from '../screens/CompleteTaskList';
 
-import { createTable } from "../utils/TaskDatabase";
-import { createUsersTable } from "../utils/UserDatabase";
-import taskStatusUpdate from "../utils/TaskStatusUpdate";
+import { createTable } from '../utils/TaskDatabase';
+import { createUsersTable } from '../utils/UserDatabase';
+import taskStatusUpdate from '../utils/TaskStatusUpdate';
+
 
 const Stack = createStackNavigator();
 
@@ -25,6 +26,7 @@ function AppNavigation() {
     return () => {
       clearInterval(taskStatusUpdate);
     };
+
   }, []);
 
   return (
@@ -46,6 +48,7 @@ function AppNavigation() {
           component={TitleScreen}
           options={{ headerShown: false }}
         />
+
         <Stack.Screen name="SignIn" component={SignInScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
