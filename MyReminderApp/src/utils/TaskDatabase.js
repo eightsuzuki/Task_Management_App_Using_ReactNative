@@ -38,6 +38,24 @@ export const createTable = () => {
   });
 };
 
+export const getMaxId = () => {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'SELECT MAX(id) AS maxId FROM tasks',
+        [],
+        (_, result) => {
+          const maxId = result.rows.item(0).maxId;
+          resolve(maxId);
+        },
+        (_, error) => {
+          reject(new Error("Failed to get max ID: " + error.message));
+        }
+      );
+    });
+  });
+};
+
 export const loadNonCompletionTasks = () => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {

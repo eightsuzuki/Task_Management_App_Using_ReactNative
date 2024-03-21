@@ -1,11 +1,12 @@
 import React from 'react';
 import { Alert } from 'react-native';
 
-import { addTasks } from '../utils/TaskDatabase';
+import { addTasks, getMaxId, loadTask } from '../utils/TaskDatabase';
 import { convertToSQLiteDateTime, daysOfWeekToSQLiteInteger } from '../utils/SupportDataBaseIO';
 import useTaskState, { daysOfWeek } from '../utils/useTaskState';
 import TaskForm from '../styles/TaskForm';
 import { taskDetailStyles } from '../styles/taskDetailStyle';
+import { SaveTaskNotification } from '../utils/notification';
 
 
 const TaskDetailScreen = ({ navigation }) => {
@@ -29,23 +30,32 @@ const TaskDetailScreen = ({ navigation }) => {
   };
 
   const handleSaveTask = async () => {
-    const values = [
-      taskName,
-      convertToSQLiteDateTime(startTime),
-      convertToSQLiteDateTime(endTime),
-      daysOfWeekToSQLiteInteger(selectedDays),
-      0,
-      isNotification & 1
-    ];
-    addTasks(values)
-    .then(() => {
+    try {
+      const values = [
+        taskName,
+        convertToSQLiteDateTime(startTime),
+        convertToSQLiteDateTime(endTime),
+        daysOfWeekToSQLiteInteger(selectedDays),
+        0,
+        isNotification & 1
+      ];
+      await addTasks(values);
+  
       Alert.alert('Success', 'Task added successfully!');
+
+      const maxId = await getMaxId();
+      const task = await loadTask(maxId);
+
+      if (task[0].isnotification) {
+        await SaveTaskNotification(task[0]);
+      }
+      
       navigation.goBack();
-    })
-    .catch(error => {
-      Alert.alert('Error', 'Failed to save the task.\n'+ error);
-    });
+    } catch (error) {
+      Alert.alert("Error", error.message);
+    }
   };
+  
 
   return (
     <TaskForm

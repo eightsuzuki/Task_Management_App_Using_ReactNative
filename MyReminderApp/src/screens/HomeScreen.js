@@ -3,8 +3,9 @@ import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert, Switch, Butt
 import { AntDesign, Octicons } from '@expo/vector-icons';
 import * as Notifications from 'expo-notifications';
 
-import { loadNonCompletionTasks, deleteSelectedTask, changeTaskStatus } from '../utils/TaskDatabase';
+import { loadNonCompletionTasks, deleteSelectedTask, changeTaskStatus, loadTask } from '../utils/TaskDatabase';
 import { daysOfWeek } from '../utils/useTaskState';
+import { SaveTaskNotification, cancelScheduledNotification } from '../utils/notification';
 
 
 function HomeScreen({ navigation }) {
@@ -48,6 +49,7 @@ function HomeScreen({ navigation }) {
   const deleteTask = async (id) => {
     try {
       await deleteSelectedTask(id);
+      await cancelScheduledNotification(String(id));
       newTasks = await loadTasks();
       setTasks(newTasks);
     } catch (error) {
@@ -56,6 +58,22 @@ function HomeScreen({ navigation }) {
   };
 
   const statusUpdate = async (newStatus, id) => {
+    if(newStatus) {
+      try{
+        await cancelScheduledNotification(String(id));
+      } catch(error) {
+        Alert.alert("Error", error.message);
+      }
+    } else {
+      try {
+        const task = await loadTask(id);
+        if(task[0].isnotification){
+          await SaveTaskNotification(task[0]);
+        }
+      } catch (error) {
+        Alert.alert("Error", error.message);
+      }
+    }
     values = [newStatus ? 1: 0, id];
     try {
       await changeTaskStatus(values);

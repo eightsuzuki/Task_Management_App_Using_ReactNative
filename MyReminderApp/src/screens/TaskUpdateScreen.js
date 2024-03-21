@@ -7,6 +7,7 @@ import { convertFromSQLiteDateTime, convertToSQLiteDateTime, daysOfWeekToSQLiteI
 import useTaskState, { daysOfWeek }from '../utils/useTaskState';
 import TaskForm from '../styles/TaskForm';
 import { taskDetailStyles } from '../styles/taskDetailStyle';
+import { SaveTaskNotification } from '../utils/notification';
 
 
 const TaskUpdateScreen = ({ navigation }) => {
@@ -63,14 +64,20 @@ if (!updateTask) {
       isNotification & 1,
       updateTaskId
     ];
-    updateCurrentTask(values)
-    .then(() => {
+    try {
+      await updateCurrentTask(values);
       Alert.alert('Success', 'Task updated successfully!');
+
+      const task = await loadTask(updateTaskId);
+
+      if (task[0].isnotification) {
+        await SaveTaskNotification(task[0]);
+      }
+
       navigation.goBack();
-    })
-    .catch(() => {
-      Alert.alert('Error', 'Failed to update the task.');
-    });
+    } catch(error) {
+      Alert.alert('Error', 'Failed to update the task.' +error);
+    }
   };
 
   return (
