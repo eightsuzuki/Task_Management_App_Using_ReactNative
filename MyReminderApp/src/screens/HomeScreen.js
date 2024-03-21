@@ -1,21 +1,39 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert, Switch } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert, Switch, Button } from 'react-native';
 import { AntDesign, Octicons } from '@expo/vector-icons';
 import * as Notifications from 'expo-notifications';
 
 import { loadNonCompletionTasks, deleteSelectedTask, changeTaskStatus } from '../utils/TaskDatabase';
+import { daysOfWeek } from '../utils/useTaskState';
 
-const daysOfWeek = ['日', '月', '火', '水', '木', '金', '土'];
 
 function HomeScreen({ navigation }) {
   const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
-    navigation.addListener('focus', () => {
+    const unsubscribe = navigation.addListener('focus', () => {
       loadTasks();
       requestPermissionsAsync();
     });
-  }, []);
+
+    // ヘッダーにログアウトボタンを設定
+    navigation.setOptions({
+      headerRight: () => (
+        <Button
+          onPress={() => {
+            // ログアウト処理をここに書く
+            Alert.alert('Logout', 'You have been logged out.', [
+              { text: 'OK', onPress: () => navigation.navigate('Title') } // 'LoginScreen'は適宜変更してください
+            ]);
+          }}
+          title="Logout"
+          color="#000"
+        />
+      )
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   const loadTasks = async () => {
     loadNonCompletionTasks()
@@ -46,7 +64,6 @@ function HomeScreen({ navigation }) {
     } catch (error) {
       Alert.alert("Error", error.message);
     }
-    
   }
 
   const requestPermissionsAsync = async () => {
