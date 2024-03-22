@@ -11,6 +11,7 @@ import {
   ImageBackground,
 } from "react-native";
 import { AntDesign, Octicons } from "@expo/vector-icons";
+
 import * as Notifications from "expo-notifications";
 
 import {
@@ -24,8 +25,7 @@ import {
   SaveTaskNotification,
   cancelScheduledNotification,
 } from "../utils/notification";
-import { useUser } from '../utils/UserContext';
-
+import { useUser } from "../utils/UserContext";
 
 function HomeScreen({ navigation, route }) {
   const [tasks, setTasks] = useState([]);
@@ -131,52 +131,69 @@ function HomeScreen({ navigation, route }) {
         renderItem={({ item }) => (
           <View style={styles.taskItem}>
             <View>
-              <Text style={styles.taskText}>{'  '}{item.name || "未設定"}</Text>
-              <View style={styles.line}></View>
-              <Text>Start Time</Text>
-              <Text style={{ fontSize: 23 }}>{`${item.starttime}`}</Text>
-              <Text>End Time</Text>
-              <Text style={{ fontSize: 23 }}>{`${item.endtime}`}</Text>
-              <Text>{`Repeat: ${
-                item.repeat
-                  ? daysOfWeek
-                      .filter(
-                        (day, index) => item.repeatDay && item.repeatDay[index]
-                      )
-                      .map((day, index) => daysOfWeek[index])
-                      .join("・")
-                  : "No Repeat"
-              }`}</Text>
+              <View>
+                <Text style={styles.taskText}>
+                  {"  "}
+                  {item.name || "未設定"}
+                </Text>
+                <View style={styles.line}></View>
+              </View>
+              <View>
+                <Text>Start Time</Text>
+                <Text style={{ fontSize: 23 }}>{`${item.starttime}`}</Text>
+                <Text>End Time</Text>
+                <Text style={{ fontSize: 23 }}>{`${item.endtime}`}</Text>
+                <Text>{`Repeat: ${
+                  item.repeat
+                    ? daysOfWeek
+                        .filter(
+                          (day, index) =>
+                            item.repeatDay && item.repeatDay[index]
+                        )
+                        .map((day, index) => daysOfWeek[index])
+                        .join("・")
+                    : "No Repeat"
+                }`}</Text>
+              </View>
             </View>
-            <View style={styles.switchContainer}>
-              <Text>Uncomplete</Text>
-              <Switch
-                value={item.status ? true : false}
-                onValueChange={(newValue) => statusUpdate(newValue, item.id)}
-              />
+            <View style={styles.actionsContainer}>
+              <View style={styles.complete}>
+                <Switch
+                  value={item.status ? true : false}
+                  onValueChange={(newValue) => statusUpdate(newValue, item.id)}
+                />
+                <Text>Uncomplete</Text>
+              </View>
+              <View style={styles.actionItem}>
+                <TouchableOpacity
+                  style={styles.actionItem}
+                  onPress={() =>
+                    navigation.navigate("TaskUpdate", { updateTaskId: item.id })
+                  }
+                >
+                  <AntDesign name="edit" size={24} color="blue" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.actionItem}
+                  onPress={() => deleteTask(item.id)}
+                >
+                  <AntDesign name="delete" size={24} color="red" />
+                </TouchableOpacity>
+              </View>
             </View>
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("TaskUpdate", { updateTaskId: item.id })
-              }
-            >
-              <AntDesign name="edit" size={24} color="blue" />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => deleteTask(item.id)}>
-              <AntDesign name="delete" size={24} color="red" />
-            </TouchableOpacity>
           </View>
         )}
         style={styles.flatListContainer} // 追加：FlatListに適用するスタイル
       />
 
-      <TouchableOpacity 
-        style={styles.taskList} 
-        onPress={() => navigation.navigate('CompleteTaskList', { userId: userId })}
-
+      <TouchableOpacity
+        style={styles.completeTasksButtonBase}
+        onPress={() =>
+          navigation.navigate("CompleteTaskList", { userId: userId })
+        }
       >
         <View style={styles.completeTasksButton}>
-          <AntDesign name="check" size={50} color="white" />
+          <AntDesign name="check" size={40} color="white" />
           <Text style={styles.completeTasksText}>Completed Tasks</Text>
         </View>
       </TouchableOpacity>
@@ -193,8 +210,8 @@ function HomeScreen({ navigation, route }) {
 
 const styles = StyleSheet.create({
   line: {
-    borderBottomColor: "#000000",
-    borderBottomWidth: 1,
+    borderBottomColor: "#B3B3B3",
+    borderBottomWidth: 3,
     marginBottom: 10, // 線とテキストの間に余白を設定します
   },
   container: {
@@ -211,7 +228,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     backgroundColor: "#fff",
-    padding: 20,
+    padding: 15,
     marginVertical: 8,
     marginHorizontal: 16,
     borderRadius: 10,
@@ -225,7 +242,7 @@ const styles = StyleSheet.create({
     elevation: 0,
   },
   taskText: {
-    fontSize: 25,
+    fontSize: 30,
     fontboldWeight: "bold",
   },
   addButton: {
@@ -248,7 +265,7 @@ const styles = StyleSheet.create({
     elevation: 0,
   },
 
-  taskList: {
+  completeTasksButtonBase: {
     position: "absolute",
     left: 30,
     bottom: 30,
@@ -262,7 +279,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 2,
     elevation: 0,
-    height: 60,
+    height: 50,
     width: 200,
     borderRadius: 30,
     backgroundColor: "#2D3F45", // 白色の背景
@@ -275,30 +292,28 @@ const styles = StyleSheet.create({
   completeTasksText: {
     color: "white",
     fontSize: 16,
+    fontWeight: "bold",
     marginLeft: 5, // テキストとアイコンの間隔を設定
   },
   flatListContainer: {
     flexGrow: 1, // フラットリストが親コンテナいっぱいに広がるようにする
-    marginTop: 10, // 上部に10のマージンを追加
-    marginBottom: 10, // 下部に10のマージンを追加
+    marginTop: 5, // 上部に10のマージンを追加
+    marginBottom: 5, // 下部に10のマージンを追加
   },
-  taskItem: {
-    flexDirection: "row",
+  actionsContainer: {
+    flexDirection: "column",
     alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#fff",
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 5,
-      height: 5,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    elevation: 0,
+  },
+  complete: {
+    marginVertical: 10,
+    alignItems: "center", // 中央揃えにする
+  },
+  actionItem: {
+    flexDirection: "row",
+    justifyContent: "space-between", // ボタン間のスペースを均等に配置する
+    marginTop: 10, // 上部に余白を追加
+    marginRight: 10,
+    marginLeft: 10,
   },
 });
 
