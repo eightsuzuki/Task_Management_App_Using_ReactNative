@@ -6,10 +6,11 @@ import * as Notifications from 'expo-notifications';
 import { loadNonCompletionTasks, deleteSelectedTask, changeTaskStatus, loadTask } from '../utils/TaskDatabase';
 import { daysOfWeek } from '../utils/useTaskState';
 import { SaveTaskNotification, cancelScheduledNotification } from '../utils/notification';
+import { useUser } from '../utils/UserContext';
 
-
-function HomeScreen({ navigation }) {
+function HomeScreen({ navigation, route }) {
   const [tasks, setTasks] = useState([]);
+  const { userId } = useUser();
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -34,7 +35,7 @@ function HomeScreen({ navigation }) {
     });
 
     return unsubscribe;
-  }, [navigation]);
+  }, [navigation, userId]);
 
   const loadTasks = async () => {
     loadNonCompletionTasks()
@@ -119,7 +120,7 @@ function HomeScreen({ navigation }) {
       />
       <TouchableOpacity 
         style={styles.taskList} 
-        onPress={() => navigation.navigate('CompleteTaskList')}
+        onPress={() => navigation.navigate('CompleteTaskList', { userId: userId })}
       >
         <Octicons name="tasklist" size={60} color="black" />
       </TouchableOpacity>
