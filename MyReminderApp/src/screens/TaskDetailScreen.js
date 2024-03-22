@@ -1,13 +1,20 @@
-import React from 'react';
-import { Alert } from 'react-native';
+import React from "react";
+import {
+  Alert,
+  StyleSheet,
+  ImageBackground,
+  TouchableOpacity,
+} from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-import { addTasks, getMaxId, loadTask } from '../utils/TaskDatabase';
-import { convertToSQLiteDateTime, daysOfWeekToSQLiteInteger } from '../utils/SupportDataBaseIO';
-import useTaskState, { daysOfWeek } from '../utils/useTaskState';
-import TaskForm from '../styles/TaskForm';
-import { taskDetailStyles } from '../styles/taskDetailStyle';
-import { SaveTaskNotification } from '../utils/notification';
-
+import { addTasks, getMaxId, loadTask } from "../utils/TaskDatabase";
+import {
+  convertToSQLiteDateTime,
+  daysOfWeekToSQLiteInteger,
+} from "../utils/SupportDataBaseIO";
+import useTaskState, { daysOfWeek } from "../utils/useTaskState";
+import TaskForm from "../styles/TaskForm";
+import { SaveTaskNotification } from "../utils/notification";
 
 const TaskDetailScreen = ({ navigation }) => {
   const {
@@ -20,7 +27,7 @@ const TaskDetailScreen = ({ navigation }) => {
     selectedDays,
     setSelectedDays,
     isNotification,
-    setIsNotification
+    setIsNotification,
   } = useTaskState();
 
   const toggleDay = (index) => {
@@ -28,6 +35,14 @@ const TaskDetailScreen = ({ navigation }) => {
     updatedDays[index] = !updatedDays[index];
     setSelectedDays(updatedDays);
   };
+
+  navigation.setOptions({
+    headerTitle: 'Task Detail', 
+    headerTitleStyle: {
+      fontSize: 24,
+    },
+    headerLeft: null, 
+  });
 
   const handleSaveTask = async () => {
     try {
@@ -37,11 +52,11 @@ const TaskDetailScreen = ({ navigation }) => {
         convertToSQLiteDateTime(endTime),
         daysOfWeekToSQLiteInteger(selectedDays),
         0,
-        isNotification & 1
+        isNotification & 1,
       ];
       await addTasks(values);
-  
-      Alert.alert('Success', 'Task added successfully!');
+
+      Alert.alert("Success", "Task added successfully!");
 
       const maxId = await getMaxId();
       const task = await loadTask(maxId);
@@ -49,32 +64,126 @@ const TaskDetailScreen = ({ navigation }) => {
       if (task[0].isnotification) {
         await SaveTaskNotification(task[0]);
       }
-      
+
       navigation.goBack();
     } catch (error) {
       Alert.alert("Error", error.message);
     }
   };
-  
 
   return (
-    <TaskForm
-      styles={taskDetailStyles}
-      taskName={taskName}
-      setTaskName={setTaskName}
-      startTime={startTime}
-      setStartTime={setStartTime}
-      endTime={endTime}
-      setEndTime={setEndTime}
-      daysOfWeek={daysOfWeek}
-      selectedDays={selectedDays}
-      toggleDay={toggleDay}
-      isNotification={isNotification}
-      setIsNotification={setIsNotification}
-      handleSaveTask={handleSaveTask}
-      navigation={navigation}
-    />
+    <ImageBackground
+      source={require("../../assets/timer.png")}
+      style={styles.container}
+      imageStyle={styles.backgroundImage}
+    >
+      <TaskForm
+        styles={styles.taskDetailStyles}
+        taskName={taskName}
+        setTaskName={setTaskName}
+        startTime={startTime}
+        setStartTime={setStartTime}
+        endTime={endTime}
+        setEndTime={setEndTime}
+        daysOfWeek={daysOfWeek}
+        selectedDays={selectedDays}
+        toggleDay={toggleDay}
+        isNotification={isNotification}
+        setIsNotification={setIsNotification}
+        handleSaveTask={handleSaveTask}
+        navigation={navigation}
+      />
+      <TouchableOpacity
+        style={styles.taskList}
+        onPress={() => navigation.navigate("Home")}
+      >
+        <MaterialCommunityIcons
+          name="keyboard-backspace"
+          size={60}
+          color="white"
+        />
+      </TouchableOpacity>
+    </ImageBackground>
   );
 };
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#D9D9D9",
+    opacity: 1,
+  },
+  backgroundImage: {
+    resizeMode: "contain",
+    width: "100%",
+    height: "180%",
+  },
+  taskList: {
+    position: 'absolute',
+    left: 30,
+    bottom: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 75,
+    width: 75,
+    borderRadius: 30,
+    backgroundColor: '#2D3F45',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 5,
+      height: 5,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 0,
+  },
+  taskDetailStyles: {
+    container: {
+      flex: 1,
+      padding: 20,
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: 'gray',
+      backgroundColor: '#fff',
+      padding: 10,
+      marginBottom: 20,
+      borderRadius: 5,
+    },
+    text: {
+      color: '#000',
+      fontSize: 18,
+    },
+    daysContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      marginBottom: 0, // 少し大きくする
+      padding: 20, // パディングを増やす
+    },
+    dayButton: {
+      padding: 7,
+      color: 'black',
+      borderWidth: 3,
+      borderColor: '#5D5D5D',
+      borderRadius: 20,
+    },
+    selectedDayButton: {
+      color: 'white',
+      backgroundColor: '#5D5D5D',
+      borderRadius: 20, // 任意の値を設定して丸みを調整
+    },
+    switchContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 20,
+      justifyContent: 'space-between',
+    },
+    notification: {
+      color: '#fff',
+
+    },
+}});
+
 
 export default TaskDetailScreen;

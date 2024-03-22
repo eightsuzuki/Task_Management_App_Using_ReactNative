@@ -1,37 +1,61 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert, Switch, Button } from 'react-native';
-import { AntDesign, Octicons } from '@expo/vector-icons';
-import * as Notifications from 'expo-notifications';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  Switch,
+  Button,
+  ImageBackground,
+} from "react-native";
+import { AntDesign, Octicons } from "@expo/vector-icons";
+import * as Notifications from "expo-notifications";
 
-import { loadNonCompletionTasks, deleteSelectedTask, changeTaskStatus, loadTask } from '../utils/TaskDatabase';
-import { daysOfWeek } from '../utils/useTaskState';
-import { SaveTaskNotification, cancelScheduledNotification } from '../utils/notification';
+import {
+  loadNonCompletionTasks,
+  deleteSelectedTask,
+  changeTaskStatus,
+  loadTask,
+} from "../utils/TaskDatabase";
+import { daysOfWeek } from "../utils/useTaskState";
+import {
+  SaveTaskNotification,
+  cancelScheduledNotification,
+} from "../utils/notification";
 import { useUser } from '../utils/UserContext';
+
 
 function HomeScreen({ navigation, route }) {
   const [tasks, setTasks] = useState([]);
   const { userId } = useUser();
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+    const unsubscribe = navigation.addListener("focus", () => {
       loadTasks();
       requestPermissionsAsync();
     });
 
     // ヘッダーにログアウトボタンを設定
     navigation.setOptions({
+      headerTitle: "Routine Timer", // ヘッダーの真ん中のタイトルを"Routine Timer"に変更する
+      headerTitleStyle: {
+        fontSize: 24, // ヘッダータイトルのフォントサイズを大きくする
+      },
+      headerLeft: null, // 戻るボタンのタイトルを非表示にする
       headerRight: () => (
         <Button
           onPress={() => {
             // ログアウト処理をここに書く
-            Alert.alert('Logout', 'You have been logged out.', [
-              { text: 'OK', onPress: () => navigation.navigate('Title') } // 'LoginScreen'は適宜変更してください
+            Alert.alert("Logout", "You have been logged out.", [
+              { text: "OK", onPress: () => navigation.navigate("Title") }, // 'LoginScreen'は適宜変更してください
             ]);
           }}
           title="Logout"
-          color="#000"
+          color="#FFF" // ログアウトボタンの文字色を白に設定する
         />
-      )
+      ),
     });
 
     return unsubscribe;
@@ -39,12 +63,12 @@ function HomeScreen({ navigation, route }) {
 
   const loadTasks = async () => {
     loadNonCompletionTasks()
-    .then(tasks => {
-      setTasks(tasks);
-    })
-    .catch(error => {
-      Alert.alert("Error", error.message);
-    });
+      .then((tasks) => {
+        setTasks(tasks);
+      })
+      .catch((error) => {
+        Alert.alert("Error", error.message);
+      });
   };
 
   const deleteTask = async (id) => {
@@ -59,23 +83,23 @@ function HomeScreen({ navigation, route }) {
   };
 
   const statusUpdate = async (newStatus, id) => {
-    if(newStatus) {
-      try{
+    if (newStatus) {
+      try {
         await cancelScheduledNotification(String(id));
-      } catch(error) {
+      } catch (error) {
         Alert.alert("Error", error.message);
       }
     } else {
       try {
         const task = await loadTask(id);
-        if(task[0].isnotification){
+        if (task[0].isnotification) {
           await SaveTaskNotification(task[0]);
         }
       } catch (error) {
         Alert.alert("Error", error.message);
       }
     }
-    values = [newStatus ? 1: 0, id];
+    values = [newStatus ? 1 : 0, id];
     try {
       await changeTaskStatus(values);
       newTasks = await loadTasks();
@@ -83,33 +107,59 @@ function HomeScreen({ navigation, route }) {
     } catch (error) {
       Alert.alert("Error", error.message);
     }
-  }
+  };
 
   const requestPermissionsAsync = async () => {
     const { granted } = await Notifications.getPermissionsAsync();
-    if (granted) { return }
-  
+    if (granted) {
+      return;
+    }
+
     await Notifications.requestPermissionsAsync();
-  }
+  };
 
   return (
-    <View style={styles.container}>
+    <ImageBackground
+      source={require("../../assets/timer.png")}
+      style={styles.container}
+      imageStyle={styles.backgroundImage}
+    >
+      {/* Your existing content here */}
       <FlatList
         data={tasks}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.taskItem}>
             <View>
-              <Text style={styles.taskText}>{item.name}</Text>
-              <Text>{`Time: ${item.starttime}`}</Text>
-              
-              <Text>{`Repeat: ${item.repeat ? daysOfWeek.filter((day, index) => item.repeatDay && item.repeatDay[index]).map((day, index) => daysOfWeek[index]).join('・') : 'No Repeat'}`}</Text>
+              <Text style={styles.taskText}>{'  '}{item.name || "未設定"}</Text>
+              <View style={styles.line}></View>
+              <Text>Start Time</Text>
+              <Text style={{ fontSize: 23 }}>{`${item.starttime}`}</Text>
+              <Text>End Time</Text>
+              <Text style={{ fontSize: 23 }}>{`${item.endtime}`}</Text>
+              <Text>{`Repeat: ${
+                item.repeat
+                  ? daysOfWeek
+                      .filter(
+                        (day, index) => item.repeatDay && item.repeatDay[index]
+                      )
+                      .map((day, index) => daysOfWeek[index])
+                      .join("・")
+                  : "No Repeat"
+              }`}</Text>
             </View>
             <View style={styles.switchContainer}>
-              <Text>Status</Text>
-              <Switch value={item.status ? true : false} onValueChange={(newValue) => statusUpdate(newValue, item.id)} />
+              <Text>Uncomplete</Text>
+              <Switch
+                value={item.status ? true : false}
+                onValueChange={(newValue) => statusUpdate(newValue, item.id)}
+              />
             </View>
-            <TouchableOpacity onPress={() => navigation.navigate('TaskUpdate', { updateTaskId: item.id})}>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate("TaskUpdate", { updateTaskId: item.id })
+              }
+            >
               <AntDesign name="edit" size={24} color="blue" />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => deleteTask(item.id)}>
@@ -117,86 +167,138 @@ function HomeScreen({ navigation, route }) {
             </TouchableOpacity>
           </View>
         )}
+        style={styles.flatListContainer} // 追加：FlatListに適用するスタイル
       />
+
       <TouchableOpacity 
         style={styles.taskList} 
         onPress={() => navigation.navigate('CompleteTaskList', { userId: userId })}
+
       >
-        <Octicons name="tasklist" size={60} color="black" />
+        <View style={styles.completeTasksButton}>
+          <AntDesign name="check" size={50} color="white" />
+          <Text style={styles.completeTasksText}>Completed Tasks</Text>
+        </View>
       </TouchableOpacity>
-      <TouchableOpacity 
-        style={styles.addButton} 
-        onPress={() => navigation.navigate('TaskDetail')}
+
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => navigation.navigate("TaskDetail")}
       >
-        <AntDesign name="pluscircle" size={60} color="blue" />
+        <AntDesign name="pluscircle" size={85} color="#2D3F45" />
       </TouchableOpacity>
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  line: {
+    borderBottomColor: "#000000",
+    borderBottomWidth: 1,
+    marginBottom: 10, // 線とテキストの間に余白を設定します
+  },
   container: {
     flex: 1,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: "#B3B3B3",
+  },
+  backgroundImage: {
+    resizeMode: "contain",
+    width: "100%",
+    height: "180%",
   },
   taskItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#fff',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#fff",
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 16,
     borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: {
-      width: 0,
-      height: 2,
+      width: 5,
+      height: 5,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 0,
   },
   taskText: {
-    fontSize: 18,
+    fontSize: 25,
+    fontboldWeight: "bold",
   },
   addButton: {
-    position: 'absolute',
+    position: "absolute",
     right: 30,
     bottom: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 60,
-    width: 60,
-    borderRadius: 30,
-    backgroundColor: 'white',
+    alignItems: "center",
+    justifyContent: "center",
+    height: 85, // 大きさを変更
+    width: 85, // 大きさを変更
+    borderRadius: 60, // 丸みを帯びた四角にする
+    backgroundColor: "white",
     shadowColor: "#000",
     shadowOffset: {
-      width: 0,
-      height: 2,
+      width: 5,
+      height: 5,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 0,
   },
+
   taskList: {
-    position: 'absolute',
+    position: "absolute",
     left: 30,
     bottom: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 60,
-    width: 60,
-    borderRadius: 30,
-    backgroundColor: 'white',
+    alignItems: "center",
+    justifyContent: "center",
     shadowColor: "#000",
     shadowOffset: {
-      width: 0,
-      height: 2,
+      width: 5,
+      height: 5,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 0,
+    height: 60,
+    width: 200,
+    borderRadius: 30,
+    backgroundColor: "#2D3F45", // 白色の背景
+  },
+  completeTasksButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  completeTasksText: {
+    color: "white",
+    fontSize: 16,
+    marginLeft: 5, // テキストとアイコンの間隔を設定
+  },
+  flatListContainer: {
+    flexGrow: 1, // フラットリストが親コンテナいっぱいに広がるようにする
+    marginTop: 10, // 上部に10のマージンを追加
+    marginBottom: 10, // 下部に10のマージンを追加
+  },
+  taskItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#fff",
+    padding: 20,
+    marginVertical: 8,
+    marginHorizontal: 16,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 5,
+      height: 5,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 0,
   },
 });
 

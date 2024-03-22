@@ -11,7 +11,11 @@ const TaskForm = ({ styles, taskName, setTaskName, startTime, setStartTime, endT
         value={taskName}
         placeholder="Routine name"
       />
-      <Text>Start Time:</Text>
+      <Text
+       style={styles.text}
+      >
+        Start Time:
+      </Text>
       <DateTimePicker
         testID="startTimePicker"
         value={startTime}
@@ -20,7 +24,9 @@ const TaskForm = ({ styles, taskName, setTaskName, startTime, setStartTime, endT
         display="default"
         onChange={(event, selectedTime) => setStartTime(selectedTime || startTime)}
       />
-      <Text>End Time:</Text>
+      <Text
+             style={styles.text}
+      >End Time:</Text>
       <DateTimePicker
         testID="endTimePicker"
         value={endTime}
@@ -37,10 +43,12 @@ const TaskForm = ({ styles, taskName, setTaskName, startTime, setStartTime, endT
         ))}
       </View>
       <View style={styles.switchContainer}>
-        <Text>Notification</Text>
-        <Switch value={isNotification} onValueChange={setIsNotification} />
+        <Text
+               style={styles.text}>
+        Notification</Text>
+        <Switch value={isNotification} style={styles.notification} onValueChange={setIsNotification} />
       </View>
-      <Button title="OK" onPress={handleSaveTask} color="#007AFF" />
+      <Button title="OK" onPress={handleSaveTask} color="#007AFF" fontsize={20} />
       <Button title="Cancel" onPress={() => navigation.goBack()} color="#666" />
     </View>
   );
