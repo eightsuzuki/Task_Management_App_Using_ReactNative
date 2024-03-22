@@ -14,13 +14,13 @@ function CompleteTaskList({ navigation, route }) {
 
   useEffect(() => {
     navigation.addListener('focus', () => {
-      loadTasks();
+      loadTasks(userId);
       requestPermissionsAsync();
     });
   }, []);
 
-  const loadTasks = async () => {
-    loadCompletedTasks(userId)
+  const loadTasks = async (uId) => {
+    loadCompletedTasks(uId)
     .then(tasks => {
       setTasks(tasks);
     })
@@ -91,7 +91,7 @@ function CompleteTaskList({ navigation, route }) {
       </TouchableOpacity>
       <TouchableOpacity 
         style={styles.addButton} 
-        onPress={() => navigation.navigate('TaskDetail')}
+        onPress={() => navigation.navigate('TaskDetail', { usreId: userId })}
       >
         <AntDesign name="pluscircle" size={60} color="blue" />
       </TouchableOpacity>

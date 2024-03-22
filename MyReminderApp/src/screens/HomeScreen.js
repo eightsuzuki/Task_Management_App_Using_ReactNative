@@ -14,7 +14,7 @@ function HomeScreen({ navigation, route }) {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      loadTasks();
+      loadTasks(userId);
       requestPermissionsAsync();
     });
 
@@ -37,13 +37,13 @@ function HomeScreen({ navigation, route }) {
     return unsubscribe;
   }, [navigation, userId]);
 
-  const loadTasks = async () => {
-    loadNonCompletionTasks()
+  const loadTasks = async (uId) => {
+    loadNonCompletionTasks(uId)
     .then(tasks => {
       setTasks(tasks);
     })
     .catch(error => {
-      Alert.alert("Error", error.message);
+      Alert.alert("Error loading tasks", error.message);
     });
   };
 
@@ -126,7 +126,7 @@ function HomeScreen({ navigation, route }) {
       </TouchableOpacity>
       <TouchableOpacity 
         style={styles.addButton} 
-        onPress={() => navigation.navigate('TaskDetail')}
+        onPress={() => navigation.navigate('TaskDetail', { userId: userId })}
       >
         <AntDesign name="pluscircle" size={60} color="blue" />
       </TouchableOpacity>

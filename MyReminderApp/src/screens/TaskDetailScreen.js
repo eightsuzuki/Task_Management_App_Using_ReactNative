@@ -1,5 +1,6 @@
 import React from 'react';
 import { Alert } from 'react-native';
+import { useRoute } from '@react-navigation/native';
 
 import { addTasks, getMaxId, loadTask } from '../utils/TaskDatabase';
 import { convertToSQLiteDateTime, daysOfWeekToSQLiteInteger } from '../utils/SupportDataBaseIO';
@@ -10,6 +11,8 @@ import { SaveTaskNotification } from '../utils/notification';
 
 
 const TaskDetailScreen = ({ navigation }) => {
+  const route = useRoute();
+  const { userId } = route.params;
   const {
     taskName,
     setTaskName,
@@ -37,13 +40,14 @@ const TaskDetailScreen = ({ navigation }) => {
         convertToSQLiteDateTime(endTime),
         daysOfWeekToSQLiteInteger(selectedDays),
         0,
-        isNotification & 1
+        isNotification & 1,
+        userId
       ];
       await addTasks(values);
   
       Alert.alert('Success', 'Task added successfully!');
 
-      const maxId = await getMaxId();
+      const maxId = await getMaxId(userId);
       const task = await loadTask(maxId);
 
       if (task[0].isnotification) {
@@ -52,7 +56,7 @@ const TaskDetailScreen = ({ navigation }) => {
       
       navigation.goBack();
     } catch (error) {
-      Alert.alert("Error", error.message);
+      Alert.alert("Fail to save task\n", error.message);
     }
   };
   
