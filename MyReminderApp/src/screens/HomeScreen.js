@@ -37,28 +37,28 @@ function HomeScreen({ navigation, route }) {
     return unsubscribe;
   }, [navigation, userId]);
 
-  const loadTasks = async (uId) => {
-    loadNonCompletionTasks(uId)
-    .then(tasks => {
+  const loadTasks = async () => {
+    try {
+      const tasks = await loadNonCompletionTasks(userId);
       setTasks(tasks);
-    })
-    .catch(error => {
+      
+    } catch (error) {
       Alert.alert("Error loading tasks", error.message);
-    });
+    }
   };
 
   const deleteTask = async (id) => {
     try {
       await deleteSelectedTask(id);
       await cancelScheduledNotification(String(id));
-      newTasks = await loadTasks();
-      setTasks(newTasks);
+      await loadTasks();
     } catch (error) {
       Alert.alert("Error", error.message);
     }
   };
 
   const statusUpdate = async (newStatus, id) => {
+    // Set notifications
     if(newStatus) {
       try{
         await cancelScheduledNotification(String(id));
@@ -75,11 +75,11 @@ function HomeScreen({ navigation, route }) {
         Alert.alert("Error", error.message);
       }
     }
+    // Update task status
     values = [newStatus ? 1: 0, id];
     try {
       await changeTaskStatus(values);
-      newTasks = await loadTasks();
-      setTasks(newTasks);
+      await loadTasks();
     } catch (error) {
       Alert.alert("Error", error.message);
     }

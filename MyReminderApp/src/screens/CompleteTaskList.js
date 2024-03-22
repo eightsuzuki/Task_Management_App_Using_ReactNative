@@ -14,13 +14,13 @@ function CompleteTaskList({ navigation, route }) {
 
   useEffect(() => {
     navigation.addListener('focus', () => {
-      loadTasks(userId);
+      loadTasks();
       requestPermissionsAsync();
     });
   }, []);
 
-  const loadTasks = async (uId) => {
-    loadCompletedTasks(uId)
+  const loadTasks = async () => {
+    loadCompletedTasks(userId)
     .then(tasks => {
       setTasks(tasks);
     })
@@ -32,8 +32,7 @@ function CompleteTaskList({ navigation, route }) {
   const deleteTask = async (id) => {
     try {
       await deleteSelectedTask(id);
-      newTasks = await loadTasks();
-      setTasks(newTasks);
+      loadTasks();
     } catch (error) {
       Alert.alert("Error", error.message);
     }
@@ -43,9 +42,9 @@ function CompleteTaskList({ navigation, route }) {
     values = [newStatus ? 1: 0, id];
     try {
       await changeTaskStatus(values);
-      newTasks = await loadTasks();
-      setTasks(newTasks);
+      await loadTasks();
     } catch (error) {
+      await loadTasks();
       Alert.alert("Error", error.message);
     }
     
