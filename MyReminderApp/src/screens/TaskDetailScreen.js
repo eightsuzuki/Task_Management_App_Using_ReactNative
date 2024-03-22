@@ -40,7 +40,7 @@ const TaskDetailScreen = ({ navigation }) => {
   };
 
   navigation.setOptions({
-    headerTitle: 'Task Detail', 
+    headerTitle: 'Add Task', 
     headerTitleStyle: {
       fontSize: 24,
     },
