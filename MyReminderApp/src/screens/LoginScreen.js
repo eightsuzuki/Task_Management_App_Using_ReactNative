@@ -14,7 +14,10 @@ function LoginScreen({ navigation }) {
       if (users.length > 0 && users[0].password === password) {
         const userDetails = await loadUserById(users[0].id);
         setUserId(userDetails[0].id);
-        navigation.navigate('Home');
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Home' }]
+        });
       } else {
         Alert.alert('Invalid Login', 'The username or password you entered is incorrect.');
       }
