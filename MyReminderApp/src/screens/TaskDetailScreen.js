@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useRoute } from '@react-navigation/native';
 
 import { addTasks, getMaxId, loadTask } from "../utils/TaskDatabase";
 import {
@@ -17,6 +18,8 @@ import TaskForm from "../styles/TaskForm";
 import { SaveTaskNotification } from "../utils/notification";
 
 const TaskDetailScreen = ({ navigation }) => {
+  const route = useRoute();
+  const { userId } = route.params;
   const {
     taskName,
     setTaskName,
@@ -45,6 +48,10 @@ const TaskDetailScreen = ({ navigation }) => {
   });
 
   const handleSaveTask = async () => {
+    if (!taskName) {
+      Alert.alert('Task name must be filled');
+      return
+    }
     try {
       const values = [
         taskName,
@@ -53,12 +60,13 @@ const TaskDetailScreen = ({ navigation }) => {
         daysOfWeekToSQLiteInteger(selectedDays),
         0,
         isNotification & 1,
+        userId
       ];
       await addTasks(values);
 
       Alert.alert("Success", "Task added successfully!");
 
-      const maxId = await getMaxId();
+      const maxId = await getMaxId(userId);
       const task = await loadTask(maxId);
 
       if (task[0].isnotification) {
@@ -67,7 +75,7 @@ const TaskDetailScreen = ({ navigation }) => {
 
       navigation.goBack();
     } catch (error) {
-      Alert.alert("Error", error.message);
+      Alert.alert("Fail to save task\n", error.message);
     }
   };
 

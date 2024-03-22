@@ -40,8 +40,7 @@ function CompleteTaskList({ navigation, route }) {
   const deleteTask = async (id) => {
     try {
       await deleteSelectedTask(id);
-      newTasks = await loadTasks();
-      setTasks(newTasks);
+      loadTasks();
     } catch (error) {
       Alert.alert("Error", error.message);
     }
@@ -51,9 +50,9 @@ function CompleteTaskList({ navigation, route }) {
     values = [newStatus ? 1: 0, id];
     try {
       await changeTaskStatus(values);
-      newTasks = await loadTasks();
-      setTasks(newTasks);
+      await loadTasks();
     } catch (error) {
+      await loadTasks();
       Alert.alert("Error", error.message);
     }
     
@@ -101,7 +100,13 @@ function CompleteTaskList({ navigation, route }) {
       >
         <MaterialCommunityIcons name="keyboard-backspace" size={60} color="white" />
       </TouchableOpacity>
-
+      <TouchableOpacity 
+        style={styles.addButton} 
+        onPress={() => navigation.navigate('TaskDetail', { usreId: userId })}
+      >
+        <AntDesign name="pluscircle" size={60} color="blue" />
+      </TouchableOpacity>
+    </View>
       </ImageBackground>
   );
 }

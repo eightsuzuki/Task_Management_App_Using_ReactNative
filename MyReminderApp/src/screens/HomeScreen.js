@@ -62,29 +62,29 @@ function HomeScreen({ navigation, route }) {
   }, [navigation, userId]);
 
   const loadTasks = async () => {
-    loadNonCompletionTasks()
-      .then((tasks) => {
-        setTasks(tasks);
-      })
-      .catch((error) => {
-        Alert.alert("Error", error.message);
-      });
+    try {
+      const tasks = await loadNonCompletionTasks(userId);
+      setTasks(tasks);
+      
+    } catch (error) {
+      Alert.alert("Error loading tasks", error.message);
+    }
   };
 
   const deleteTask = async (id) => {
     try {
       await deleteSelectedTask(id);
       await cancelScheduledNotification(String(id));
-      newTasks = await loadTasks();
-      setTasks(newTasks);
+      await loadTasks();
     } catch (error) {
       Alert.alert("Error", error.message);
     }
   };
 
   const statusUpdate = async (newStatus, id) => {
-    if (newStatus) {
-      try {
+    // Set notifications
+    if(newStatus) {
+      try{
         await cancelScheduledNotification(String(id));
       } catch (error) {
         Alert.alert("Error", error.message);
@@ -99,11 +99,11 @@ function HomeScreen({ navigation, route }) {
         Alert.alert("Error", error.message);
       }
     }
-    values = [newStatus ? 1 : 0, id];
+    // Update task status
+    values = [newStatus ? 1: 0, id];
     try {
       await changeTaskStatus(values);
-      newTasks = await loadTasks();
-      setTasks(newTasks);
+      await loadTasks();
     } catch (error) {
       Alert.alert("Error", error.message);
     }
@@ -180,10 +180,9 @@ function HomeScreen({ navigation, route }) {
           <Text style={styles.completeTasksText}>Completed Tasks</Text>
         </View>
       </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => navigation.navigate("TaskDetail")}
+      <TouchableOpacity 
+        style={styles.addButton} 
+        onPress={() => navigation.navigate('TaskDetail', { userId: userId })}
       >
         <AntDesign name="pluscircle" size={85} color="#2D3F45" />
       </TouchableOpacity>

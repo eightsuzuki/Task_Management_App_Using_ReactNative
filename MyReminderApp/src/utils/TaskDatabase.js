@@ -32,18 +32,20 @@ export const createTable = () => {
         endtime TEXT, \
         repeatday INTEGER, \
         status INTEGER, \
-        isnotification INTEGER \
+        isnotification INTEGER, \
+        userId INTEGER \
         )'
     );
   });
 };
 
-export const getMaxId = () => {
+export const getMaxId = (uId) => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
-        'SELECT MAX(id) AS maxId FROM tasks',
-        [],
+        'SELECT MAX(id) AS maxId FROM tasks \
+        WHERE userid = ?',
+        [uId],
         (_, result) => {
           const maxId = result.rows.item(0).maxId;
           resolve(maxId);
@@ -56,12 +58,12 @@ export const getMaxId = () => {
   });
 };
 
-export const loadNonCompletionTasks = () => {
+export const loadNonCompletionTasks = (uId) => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
-        'SELECT * FROM tasks WHERE status = 0',
-        [],
+        'SELECT * FROM tasks WHERE status = 0 AND userid = ?',
+        [uId],
         (_, { rows: { _array } }) => {
           resolve(_array);
         },
@@ -73,12 +75,12 @@ export const loadNonCompletionTasks = () => {
   });
 };
 
-export const loadCompletedTasks = () => {
+export const loadCompletedTasks = (uId) => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
-        'SELECT * FROM tasks WHERE status = 1',
-        [],
+        'SELECT * FROM tasks WHERE status = 1 AND userid = ?',
+        [uId],
         (_, { rows: { _array } }) => {
           resolve(_array);
         },
@@ -129,8 +131,8 @@ export const addTasks = (values) => {
     db.transaction(tx => {
       tx.executeSql(
         `
-        INSERT INTO tasks (name, starttime, endtime, repeatday, status, isnotification)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO tasks (name, starttime, endtime, repeatday, status, isnotification, userid)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         `,
         values,
         (_, result) => {

@@ -65,6 +65,10 @@ if (!updateTask) {
   };
 
   const handleSaveTask = async () => {
+    if (!taskName) {
+      Alert.alert('Task name must be filled');
+      return
+    }
     const values = [
       taskName,
       convertToSQLiteDateTime(startTime),
