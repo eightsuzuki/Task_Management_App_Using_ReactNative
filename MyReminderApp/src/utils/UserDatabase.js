@@ -53,8 +53,8 @@ export const loadUsers = () => {
   });
 };
 
-// Retrieves a single user by username from the 'users' table.
-export const loadUser = (username) => {
+// Retrieves a single user from the 'users' table based on the username.
+export const loadUserByUsername = (username) => {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
@@ -64,12 +64,31 @@ export const loadUser = (username) => {
           resolve(_array);
         },
         (_, error) => {
-          reject(new Error("Failed to load user: " + error.message));
+          reject(new Error("Failed to load user by username: " + error.message));
         }
       );
     });
   });
 };
+
+// Retrieves a single user from the 'users' table based on the user ID.
+export const loadUserById = (id) => {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'SELECT * FROM users WHERE id = ?',
+        [id],
+        (_, { rows: { _array } }) => {
+          resolve(_array);
+        },
+        (_, error) => {
+          reject(new Error("Failed to load user by id: " + error.message));
+        }
+      );
+    });
+  });
+};
+
 
 // Deletes a single user by username from the 'users' table.
 export const deleteUser = (username) => {
