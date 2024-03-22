@@ -128,8 +128,12 @@ function HomeScreen({ navigation }) {
         renderItem={({ item }) => (
           <View style={styles.taskItem}>
             <View>
-              <Text style={styles.taskText}>{item.name}</Text>
-              <Text>{`Time: ${item.starttime}`}</Text>
+              <Text style={styles.taskText}>{'  '}{item.name || "未設定"}</Text>
+              <View style={styles.line}></View>
+              <Text>Start Time</Text>
+              <Text style={{ fontSize: 23 }}>{`${item.starttime}`}</Text>
+              <Text>End Time</Text>
+              <Text style={{ fontSize: 23 }}>{`${item.endtime}`}</Text>
               <Text>{`Repeat: ${
                 item.repeat
                   ? daysOfWeek
@@ -142,7 +146,7 @@ function HomeScreen({ navigation }) {
               }`}</Text>
             </View>
             <View style={styles.switchContainer}>
-              <Text>Status</Text>
+              <Text>Uncomplete</Text>
               <Switch
                 value={item.status ? true : false}
                 onValueChange={(newValue) => statusUpdate(newValue, item.id)}
@@ -160,7 +164,9 @@ function HomeScreen({ navigation }) {
             </TouchableOpacity>
           </View>
         )}
+        style={styles.flatListContainer} // 追加：FlatListに適用するスタイル
       />
+
       <TouchableOpacity
         style={styles.taskList}
         onPress={() => navigation.navigate("CompleteTaskList")}
@@ -175,17 +181,21 @@ function HomeScreen({ navigation }) {
         style={styles.addButton}
         onPress={() => navigation.navigate("TaskDetail")}
       >
-        <AntDesign name="pluscircle" size={60} color="blue" />
+        <AntDesign name="pluscircle" size={85} color="#2D3F45" />
       </TouchableOpacity>
     </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  line: {
+    borderBottomColor: "#000000",
+    borderBottomWidth: 1,
+    marginBottom: 10, // 線とテキストの間に余白を設定します
+  },
   container: {
     flex: 1,
-    backgroundColor: "#9C9C9C",
-    opacity: 0.5,
+    backgroundColor: "#B3B3B3",
   },
   backgroundImage: {
     resizeMode: "contain",
@@ -203,15 +213,16 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: {
-      width: 0,
-      height: 2,
+      width: 5,
+      height: 5,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 0,
   },
   taskText: {
-    fontSize: 18,
+    fontSize: 25,
+    fontboldWeight: "bold",
   },
   addButton: {
     position: "absolute",
@@ -219,37 +230,38 @@ const styles = StyleSheet.create({
     bottom: 30,
     alignItems: "center",
     justifyContent: "center",
-    height: 60,
-    width: 60,
-    borderRadius: 30,
+    height: 85, // 大きさを変更
+    width: 85, // 大きさを変更
+    borderRadius: 60, // 丸みを帯びた四角にする
     backgroundColor: "white",
     shadowColor: "#000",
     shadowOffset: {
-      width: 0,
-      height: 2,
+      width: 5,
+      height: 5,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 0,
   },
+
   taskList: {
     position: "absolute",
     left: 30,
     bottom: 30,
     alignItems: "center",
     justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 5,
+      height: 5,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 0,
     height: 60,
     width: 200,
     borderRadius: 30,
     backgroundColor: "#2D3F45", // 白色の背景
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
   },
   completeTasksButton: {
     flexDirection: "row",
@@ -260,6 +272,29 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     marginLeft: 5, // テキストとアイコンの間隔を設定
+  },
+  flatListContainer: {
+    flexGrow: 1, // フラットリストが親コンテナいっぱいに広がるようにする
+    marginTop: 10, // 上部に10のマージンを追加
+    marginBottom: 10, // 下部に10のマージンを追加
+  },
+  taskItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#fff",
+    padding: 20,
+    marginVertical: 8,
+    marginHorizontal: 16,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 5,
+      height: 5,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 0,
   },
 });
 
