@@ -33,6 +33,10 @@ const TaskDetailScreen = ({ navigation }) => {
   };
 
   const handleSaveTask = async () => {
+    if (!taskName) {
+      Alert.alert('Task name must be filled');
+      return
+    }
     try {
       const values = [
         taskName,
