@@ -24,9 +24,12 @@ import {
   SaveTaskNotification,
   cancelScheduledNotification,
 } from "../utils/notification";
+import { useUser } from '../utils/UserContext';
 
-function HomeScreen({ navigation }) {
+
+function HomeScreen({ navigation, route }) {
   const [tasks, setTasks] = useState([]);
+  const { userId } = useUser();
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
@@ -56,7 +59,7 @@ function HomeScreen({ navigation }) {
     });
 
     return unsubscribe;
-  }, [navigation]);
+  }, [navigation, userId]);
 
   const loadTasks = async () => {
     loadNonCompletionTasks()
@@ -167,9 +170,10 @@ function HomeScreen({ navigation }) {
         style={styles.flatListContainer} // 追加：FlatListに適用するスタイル
       />
 
-      <TouchableOpacity
-        style={styles.taskList}
-        onPress={() => navigation.navigate("CompleteTaskList")}
+      <TouchableOpacity 
+        style={styles.taskList} 
+        onPress={() => navigation.navigate('CompleteTaskList', { userId: userId })}
+
       >
         <View style={styles.completeTasksButton}>
           <AntDesign name="check" size={50} color="white" />

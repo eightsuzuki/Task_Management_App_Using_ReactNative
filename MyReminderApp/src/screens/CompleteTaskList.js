@@ -4,11 +4,13 @@ import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Notifications from 'expo-notifications';
 
 import { deleteSelectedTask, changeTaskStatus, loadCompletedTasks } from '../utils/TaskDatabase';
+import { useUser } from '../utils/UserContext';
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-function CompleteTaskList({ navigation }) {
+function CompleteTaskList({ navigation, route }) {
   const [tasks, setTasks] = useState([]);
+  const { userId } = useUser();
 
   useEffect(() => {
     navigation.addListener('focus', () => {
@@ -26,7 +28,7 @@ function CompleteTaskList({ navigation }) {
   });
 
   const loadTasks = async () => {
-    loadCompletedTasks()
+    loadCompletedTasks(userId)
     .then(tasks => {
       setTasks(tasks);
     })
@@ -95,7 +97,7 @@ function CompleteTaskList({ navigation }) {
       />
       <TouchableOpacity 
         style={styles.taskList} 
-        onPress={() => navigation.navigate('Home')}
+        onPress={() => navigation.navigate('Home', { userId: userId })}
       >
         <MaterialCommunityIcons name="keyboard-backspace" size={60} color="white" />
       </TouchableOpacity>

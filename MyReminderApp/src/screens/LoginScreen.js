@@ -1,16 +1,23 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import { loadUser } from '../utils/UserDatabase';
+import { useUser } from '../utils/UserContext';
+import { loadUserByUsername, loadUserById } from '../utils/UserDatabase';
 
 function LoginScreen({ navigation }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const { setUserId } = useUser();
 
   const handleLogin = async () => {
     try {
-      const users = await loadUser(username);
-      if (users.length === 1 && users[0].password === password) {
-        navigation.navigate('Home');
+      const users = await loadUserByUsername(username);
+      if (users.length > 0 && users[0].password === password) {
+        const userDetails = await loadUserById(users[0].id);
+        setUserId(userDetails[0].id);
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Home' }]
+        });
       } else {
         Alert.alert('Invalid Login', 'The username or password you entered is incorrect.');
       }
