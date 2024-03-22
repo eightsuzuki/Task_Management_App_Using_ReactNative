@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert, Switch } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert, Switch, ImageBackground } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import * as Notifications from 'expo-notifications';
 
@@ -16,6 +16,17 @@ function CompleteTaskList({ navigation }) {
       requestPermissionsAsync();
     });
   }, []);
+
+  navigation.setOptions({
+    headerTitle: 'Completed Tasks', // ヘッダーの真ん中のタイトルを"Routine Timer"に変更する
+    headerTitleStyle: {
+      fontSize: 24, // ヘッダータイトルのフォントサイズを大きくする
+    },
+    headerLeft: null, // 戻るボタンのタイトルを非表示にする\
+    
+
+    
+  });
 
   const loadTasks = async () => {
     loadCompletedTasks()
@@ -57,7 +68,11 @@ function CompleteTaskList({ navigation }) {
   }
 
   return (
-    <View style={styles.container}>
+    <ImageBackground
+      source={require("../../assets/timer.png")}
+      style={styles.container}
+      imageStyle={styles.backgroundImage}
+    >
       <FlatList
         data={tasks}
         keyExtractor={(item) => item.id.toString()}
@@ -93,14 +108,20 @@ function CompleteTaskList({ navigation }) {
       >
         <AntDesign name="pluscircle" size={60} color="blue" />
       </TouchableOpacity>
-    </View>
+      </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: '#9C9C9C',
+    opacity: 0.5,
+  },
+  backgroundImage: {
+    resizeMode: "contain",
+    width: "100%",
+    height: "180%",
   },
   taskItem: {
     flexDirection: 'row',
