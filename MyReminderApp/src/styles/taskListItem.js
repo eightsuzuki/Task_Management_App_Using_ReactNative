@@ -7,7 +7,10 @@ const TaskListItem = ({ styles, item, daysOfWeek, navigation, statusUpdate, dele
     <View style={styles.taskItem}>
       <View>
         <Text style={styles.taskText}>{item.name}</Text>
-        <Text>{`Time: ${item.starttime}`}</Text>
+        <Text>Start Time</Text>
+                <Text style={{ fontSize: 23 }}>{`${item.starttime}`}</Text>
+                <Text>End Time</Text>
+                <Text style={{ fontSize: 23 }}>{`${item.endtime}`}</Text>
         <Text>
           Repeat: {item.repeatday ? (
             <>
