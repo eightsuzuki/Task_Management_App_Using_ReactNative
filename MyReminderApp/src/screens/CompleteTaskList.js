@@ -1,30 +1,44 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet,Button, TouchableOpacity, Alert, Switch, ImageBackground } from 'react-native';
-import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
-import * as Notifications from 'expo-notifications';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  Button,
+  TouchableOpacity,
+  Alert,
+  Switch,
+  ImageBackground,
+} from "react-native";
+import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
+import * as Notifications from "expo-notifications";
 
-import { deleteSelectedTask, changeTaskStatus, loadCompletedTasks } from '../utils/TaskDatabase';
-import { useUser } from '../utils/UserContext';
+import {
+  deleteSelectedTask,
+  changeTaskStatus,
+  loadCompletedTasks,
+} from "../utils/TaskDatabase";
+import { useUser } from "../utils/UserContext";
 
-const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 function CompleteTaskList({ navigation, route }) {
   const [tasks, setTasks] = useState([]);
   const { userId } = useUser();
 
   useEffect(() => {
-    navigation.addListener('focus', () => {
+    navigation.addListener("focus", () => {
       loadTasks();
       requestPermissionsAsync();
     });
   }, []);
 
   navigation.setOptions({
-    headerTitle: 'Completed Tasks', 
+    headerTitle: "Completed Tasks",
     headerTitleStyle: {
       fontSize: 24,
     },
-    headerLeft: null, 
+    headerLeft: null,
 
     headerRight: () => (
       <Button
@@ -42,12 +56,12 @@ function CompleteTaskList({ navigation, route }) {
 
   const loadTasks = async () => {
     loadCompletedTasks(userId)
-    .then(tasks => {
-      setTasks(tasks);
-    })
-    .catch(error => {
-      Alert.alert("Error", error.message);
-    });
+      .then((tasks) => {
+        setTasks(tasks);
+      })
+      .catch((error) => {
+        Alert.alert("Error", error.message);
+      });
   };
 
   const deleteTask = async (id) => {
@@ -60,7 +74,7 @@ function CompleteTaskList({ navigation, route }) {
   };
 
   const statusUpdate = async (newStatus, id) => {
-    values = [newStatus ? 1: 0, id];
+    values = [newStatus ? 1 : 0, id];
     try {
       await changeTaskStatus(values);
       await loadTasks();
@@ -68,23 +82,24 @@ function CompleteTaskList({ navigation, route }) {
       await loadTasks();
       Alert.alert("Error", error.message);
     }
-    
-  }
+  };
 
   const requestPermissionsAsync = async () => {
     const { granted } = await Notifications.getPermissionsAsync();
-    if (granted) { return }
-  
+    if (granted) {
+      return;
+    }
+
     await Notifications.requestPermissionsAsync();
-  }
+  };
 
   return (
     <ImageBackground
       source={require("../../assets/timer.png")}
       style={styles.container}
       imageStyle={styles.backgroundImage}
-    >      
-    <FlatList
+    >
+      <FlatList
         data={tasks}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
@@ -144,20 +159,18 @@ function CompleteTaskList({ navigation, route }) {
         )}
         style={styles.flatListContainer} // 追加：FlatListに適用するスタイル
       />
-      <TouchableOpacity 
-        style={styles.backspace} 
-        onPress={() => navigation.navigate('Home', { userId: userId })}
+      <TouchableOpacity
+        style={styles.backspace}
+        onPress={() => navigation.navigate("Home", { userId: userId })}
       >
-        <MaterialCommunityIcons name="keyboard-backspace" size={60} color="white" />
+        <MaterialCommunityIcons
+          name="keyboard-backspace"
+          size={60}
+          color="white"
+        />
       </TouchableOpacity>
-      <TouchableOpacity 
-        style={styles.addButton} 
-        onPress={() => navigation.navigate('TaskDetail', { usreId: userId })}
-      >
-        <AntDesign name="pluscircle" size={60} color="blue" />
-      </TouchableOpacity>
-    </View>
-      </ImageBackground>
+
+    </ImageBackground>
   );
 }
 
@@ -270,15 +283,15 @@ const styles = StyleSheet.create({
   },
 
   backspace: {
-    position: 'absolute',
+    position: "absolute",
     left: 30,
     bottom: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     height: 75,
     width: 75,
     borderRadius: 30,
-    backgroundColor: '#2D3F45',
+    backgroundColor: "#2D3F45",
     shadowColor: "#000",
     shadowOffset: {
       width: 5,
