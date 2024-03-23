@@ -19,6 +19,7 @@ import {
   loadCompletedTasks,
 } from "../utils/TaskDatabase";
 import { useUser } from "../utils/UserContext";
+import TaskListItem from "../styles/taskListItem";
 
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -103,61 +104,15 @@ function CompleteTaskList({ navigation, route }) {
         data={tasks}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View style={styles.taskItem}>
-            <View>
-              <View>
-                <Text style={styles.taskText}>
-                  {"  "}
-                  {item.name || "未設定"}
-                </Text>
-                <View style={styles.line}></View>
-              </View>
-              <View>
-                <Text>Start Time</Text>
-                <Text style={{ fontSize: 23 }}>{`${item.starttime}`}</Text>
-                <Text>End Time</Text>
-                <Text style={{ fontSize: 23 }}>{`${item.endtime}`}</Text>
-                <Text>{`Repeat: ${
-                  item.repeat
-                    ? daysOfWeek
-                        .filter(
-                          (day, index) =>
-                            item.repeatDay && item.repeatDay[index]
-                        )
-                        .map((day, index) => daysOfWeek[index])
-                        .join("・")
-                    : "No Repeat"
-                }`}</Text>
-              </View>
-            </View>
-            <View style={styles.actionsContainer}>
-              <View style={styles.complete}>
-                <Switch
-                  value={item.status ? true : false}
-                  onValueChange={(newValue) => statusUpdate(newValue, item.id)}
-                />
-                <Text>Uncomplete</Text>
-              </View>
-              <View style={styles.actionItem}>
-                <TouchableOpacity
-                  style={styles.actionItem}
-                  onPress={() =>
-                    navigation.navigate("TaskUpdate", { updateTaskId: item.id })
-                  }
-                >
-                  <AntDesign name="edit" size={24} color="blue" />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.actionItem}
-                  onPress={() => deleteTask(item.id)}
-                >
-                  <AntDesign name="delete" size={24} color="red" />
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
+          <TaskListItem
+            styles={styles}
+            item={item}
+            daysOfWeek={daysOfWeek}
+            navigation={navigation}
+            statusUpdate={statusUpdate}
+            deleteTask={deleteTask}
+          />
         )}
-        style={styles.flatListContainer} // 追加：FlatListに適用するスタイル
       />
       <TouchableOpacity
         style={styles.backspace}
