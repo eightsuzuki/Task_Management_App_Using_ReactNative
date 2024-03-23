@@ -43,7 +43,7 @@ const TaskListItem = ({
             value={item.status ? true : false}
             onValueChange={(newValue) => statusUpdate(newValue, item.id)}
           />
-          <Text>Uncomplete</Text>
+          <Text>{item.status ? "Completed" : "Incomplete"}</Text>
         </View>
         <View>
           <Text> </Text>
@@ -106,9 +106,9 @@ const styles = StyleSheet.create({
     elevation: 0,
   },
   flatListContainer: {
-    flexGrow: 1, 
-    marginTop: 5, 
-    marginBottom: 5, 
+    flexGrow: 1,
+    marginTop: 5,
+    marginBottom: 5,
   },
   actionsContainer: {
     flexDirection: "column",
@@ -116,8 +116,8 @@ const styles = StyleSheet.create({
   },
   actionItem: {
     flexDirection: "row",
-    justifyContent: "space-between", 
-    marginTop: 10, 
+    justifyContent: "space-between",
+    marginTop: 10,
     marginRight: 10,
     marginLeft: 10,
   },
