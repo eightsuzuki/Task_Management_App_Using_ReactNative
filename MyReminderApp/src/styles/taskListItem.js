@@ -7,9 +7,27 @@ const TaskListItem = ({ styles, item, daysOfWeek, navigation, statusUpdate, dele
     <View style={styles.taskItem}>
     <View>
       <View>
-        <Text style={styles.taskText}>
-          {"  "}
-          {item.name || "未設定"}
+        <Text style={styles.taskText}>{item.name}</Text>
+        <Text>Start Time</Text>
+                <Text style={{ fontSize: 23 }}>{`${item.starttime}`}</Text>
+                <Text>End Time</Text>
+                <Text style={{ fontSize: 23 }}>{`${item.endtime}`}</Text>
+        <Text>
+          Repeat: {item.repeatday ? (
+            <>
+              {daysOfWeek
+                .filter((day, index) => item.repeatday & (1 << index))
+                .slice(0, 3)
+                .join(', ')}
+              {'\n'}
+              {daysOfWeek
+                .filter((day, index) => item.repeatday & (1 << index))
+                .slice(3)
+                .join(', ')}
+            </>
+          ) : (
+            'No Repeat'
+          )}
         </Text>
         <View style={styles.line}></View>
       </View>
