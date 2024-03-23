@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
   line: {
     borderBottomColor: "#B3B3B3",
     borderBottomWidth: 3,
-    marginBottom: 10, // 線とテキストの間に余白を設定します
+    marginBottom: 10, 
   },
   container: {
     flex: 1,
@@ -205,9 +205,9 @@ const styles = StyleSheet.create({
     bottom: 30,
     alignItems: "center",
     justifyContent: "center",
-    height: 85, // 大きさを変更
-    width: 85, // 大きさを変更
-    borderRadius: 60, // 丸みを帯びた四角にする
+    height: 85, 
+    width: 85, 
+    borderRadius: 60, 
     backgroundColor: "white",
     shadowColor: "#000",
     shadowOffset: {
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: 200,
     borderRadius: 30,
-    backgroundColor: "#2D3F45", // 白色の背景
+    backgroundColor: "#2D3F45", 
   },
   completeTasksButton: {
     flexDirection: "row",
@@ -247,12 +247,12 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
-    marginLeft: 5, // テキストとアイコンの間隔を設定
+    marginLeft: 5,
   },
   flatListContainer: {
-    flexGrow: 1, // フラットリストが親コンテナいっぱいに広がるようにする
-    marginTop: 5, // 上部に10のマージンを追加
-    marginBottom: 5, // 下部に10のマージンを追加
+    flexGrow: 1, 
+    marginTop: 5,
+    marginBottom: 5, 
   },
   actionsContainer: {
     flexDirection: "column",
@@ -260,12 +260,12 @@ const styles = StyleSheet.create({
   },
   complete: {
     marginVertical: 10,
-    alignItems: "center", // 中央揃えにする
+    alignItems: "center",
   },
   actionItem: {
     flexDirection: "row",
-    justifyContent: "space-between", // ボタン間のスペースを均等に配置する
-    marginTop: 10, // 上部に余白を追加
+    justifyContent: "space-between", 
+    marginTop: 10, 
     marginRight: 10,
     marginLeft: 10,
   },
