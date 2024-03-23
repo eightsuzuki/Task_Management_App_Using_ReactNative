@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     borderColor: 'black',
   },
   buttonContainer: {
-    backgroundColor: "#2D3F45", // ボタンの背景色を白に設定
+    backgroundColor: "#2D3F45", 
     borderRadius: 24,
     overflow: "hidden",
   },

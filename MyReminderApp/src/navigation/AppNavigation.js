@@ -48,9 +48,9 @@ function AppNavigation() {
       <Stack.Navigator
         screenOptions={{
           headerStyle: {
-            backgroundColor: "#6A6A6A", // ヘッダーの背景色を設定
+            backgroundColor: "#6A6A6A", 
           },
-          headerTintColor: "#FFF", // ヘッダーのテキスト色を設定
+          headerTintColor: "#FFF", 
           headerTitleStyle: {
             fontWeight: "bold",
           },
