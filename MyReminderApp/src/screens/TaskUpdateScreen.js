@@ -183,8 +183,8 @@ const styles = StyleSheet.create({
     daysContainer: {
       flexDirection: 'row',
       justifyContent: 'space-around',
-      marginBottom: 0, // 少し大きくする
-      padding: 20, // パディングを増やす
+      marginBottom: 0, 
+      padding: 20, 
     },
     dayButton: {
       padding: 7,
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     selectedDayButton: {
       color: 'white',
       backgroundColor: '#5D5D5D',
-      borderRadius: 20, // 任意の値を設定して丸みを調整
+      borderRadius: 20, 
     },
     switchContainer: {
       flexDirection: 'row',

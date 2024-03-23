@@ -4,7 +4,7 @@ export const styles = StyleSheet.create({
     line: {
       borderBottomColor: "#000000",
       borderBottomWidth: 1,
-      marginBottom: 10, // 線とテキストの間に余白を設定します
+      marginBottom: 10, 
     },
     container: {
       flex: 1,
@@ -85,12 +85,12 @@ export const styles = StyleSheet.create({
     completeTasksText: {
       color: "white",
       fontSize: 16,
-      marginLeft: 5, // テキストとアイコンの間隔を設定
+      marginLeft: 5, 
     },
     flatListContainer: {
-      flexGrow: 1, // フラットリストが親コンテナいっぱいに広がるようにする
-      marginTop: 10, // 上部に10のマージンを追加
-      marginBottom: 10, // 下部に10のマージンを追加
+      flexGrow: 1,
+      marginTop: 10,
+      marginBottom: 10, 
     },
     taskItem: {
       flexDirection: "row",
