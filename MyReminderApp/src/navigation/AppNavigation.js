@@ -13,19 +13,15 @@ import TaskUpdateScreen from '../screens/TaskUpdateScreen';
 import CompleteTaskList from '../screens/CompleteTaskList';
 
 import { createTable, deleteSelectedTask, dropTasksTable } from '../utils/TaskDatabase';
-import { createUsersTable, dropUsersTable } from '../utils/UserDatabase';
 import taskStatusUpdate from '../utils/TaskStatusUpdate';
-
 
 const Stack = createStackNavigator();
 
 function AppNavigation() {
   useEffect(() => {
     dropTasksTable();
-    dropUsersTable();
     createTable();
     taskStatusUpdate();
-    createUsersTable();
     registerForPushNotificationsAsync();
 
     return () => {

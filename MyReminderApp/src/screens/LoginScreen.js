@@ -1,50 +1,41 @@
-import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import React from 'react';
+import { View, Button, StyleSheet, Alert } from 'react-native';
 import { useUser } from '../utils/UserContext';
-import { loadUserByUsername, loadUserById } from '../utils/UserDatabase';
+import { getAuth, signInWithCredential, GoogleAuthProvider } from "firebase/auth";
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+
+// Google Sign-Inを設定
+GoogleSignin.configure({
+  webClientId: '748710972974-pqkqe1ra5j9vu6cb5nse7m438uj337an.apps.googleusercontent.com',
+});
 
 function LoginScreen({ navigation }) {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
   const { setUserId } = useUser();
 
-  const handleLogin = async () => {
+  const handleGoogleLogin = async () => {
     try {
-      const users = await loadUserByUsername(username);
-      if (users.length > 0 && users[0].password === password) {
-        const userDetails = await loadUserById(users[0].id);
-        setUserId(userDetails[0].id);
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Home' }]
-        });
-      } else {
-        Alert.alert('Invalid Login', 'The username or password you entered is incorrect.');
-      }
+      await GoogleSignin.hasPlayServices();
+      const { idToken } = await GoogleSignin.signIn();
+      const googleCredential = GoogleAuthProvider.credential(idToken);
+      const auth = getAuth();
+      const userCredential = await signInWithCredential(auth, googleCredential);
+      // ログイン成功時にユーザーIDをコンテキストに保存
+      setUserId(userCredential.user.uid);
+      // ログイン成功後、ホーム画面にナビゲート
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Home' }]
+      });
     } catch (error) {
-      Alert.alert('Login Failed', 'An error occurred during login. Please try again.');
+      Alert.alert('Login Failed', error.message);
     }
   };
 
   return (
     <View style={styles.container}>
-      <TextInput
-        placeholder="Username"
-        style={styles.input}
-        value={username}
-        onChangeText={setUsername}
-      />
-      <TextInput
-        placeholder="Password"
-        style={styles.input}
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />            
       <View style={styles.buttonContainer}>
-        <Button title="Login" onPress={handleLogin} color="white" />
+        <Button title="Login with Google" onPress={handleGoogleLogin} color="white" />
       </View>
-    
     </View>
   );
 }
@@ -57,18 +48,10 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#D9D9D9",
   },
-  input: {
-    width: '100%',
-    marginVertical: 10,
-    padding: 10,
-    borderWidth: 1,
-    borderRadius: 5,
-    borderColor: 'black',
-  },
   buttonContainer: {
-    backgroundColor: "#2D3F45", 
-    borderRadius: 24,
-    overflow: "hidden",
+    backgroundColor: "#2D3F45",
+    padding: 10,
+    borderRadius: 5,
   },
 });
 
