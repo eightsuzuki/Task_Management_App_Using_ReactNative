@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Button, StyleSheet, Alert } from 'react-native';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { getAuth, GoogleAuthProvider, signInWithCredential } from "firebase/auth";
+import { useUser } from '../utils/UserContext';
 
 // GoogleSigninの設定
 GoogleSignin.configure({
