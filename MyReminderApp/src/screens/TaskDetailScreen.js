@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useRoute } from '@react-navigation/native';
+import { useRoute } from "@react-navigation/native";
 
 import { addTasks, getMaxId, loadTask } from "../utils/TaskDatabase";
 import {
@@ -33,7 +33,7 @@ const TaskDetailScreen = ({ navigation }) => {
     isNotification,
     setIsNotification,
     selectedLabels,
-    setSelectedLabels
+    setSelectedLabels,
   } = useTaskState();
 
   const toggleDay = (index) => {
@@ -50,17 +50,17 @@ const TaskDetailScreen = ({ navigation }) => {
   };
 
   navigation.setOptions({
-    headerTitle: 'Add Task', 
+    headerTitle: "Add Task",
     headerTitleStyle: {
       fontSize: 24,
     },
-    headerLeft: null, 
+    headerLeft: null,
   });
 
   const handleSaveTask = async () => {
     if (!taskName) {
-      Alert.alert('Task name must be filled');
-      return
+      Alert.alert("Task name must be filled");
+      return;
     }
     try {
       const values = [
@@ -71,7 +71,7 @@ const TaskDetailScreen = ({ navigation }) => {
         0,
         isNotification & 1,
         convertToSQLiteLabels(selectedLabels),
-        userId
+        userId,
       ];
       await addTasks(values);
 
@@ -129,7 +129,6 @@ const TaskDetailScreen = ({ navigation }) => {
   );
 };
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -142,15 +141,15 @@ const styles = StyleSheet.create({
     height: "180%",
   },
   taskList: {
-    position: 'absolute',
+    position: "absolute",
     left: 30,
     bottom: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     height: 75,
     width: 75,
     borderRadius: 30,
-    backgroundColor: '#2D3F45',
+    backgroundColor: "#2D3F45",
     shadowColor: "#000",
     shadowOffset: {
       width: 5,
@@ -167,45 +166,57 @@ const styles = StyleSheet.create({
     },
     input: {
       borderWidth: 1,
-      borderColor: 'gray',
-      backgroundColor: '#fff',
+      borderColor: "gray",
+      backgroundColor: "#fff",
       padding: 10,
       marginBottom: 20,
       borderRadius: 5,
     },
     text: {
-      color: '#000',
+      color: "#000",
       fontSize: 18,
     },
     daysContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-around',
+      flexDirection: "row",
+      justifyContent: "space-around",
       marginBottom: 0,
-      padding: 20, 
+      padding: 20,
     },
     dayButton: {
       padding: 7,
-      color: 'black',
+      color: "black",
       borderWidth: 3,
-      borderColor: '#5D5D5D',
+      borderColor: "#5D5D5D",
       borderRadius: 20,
     },
     selectedDayButton: {
-      color: 'white',
-      backgroundColor: '#5D5D5D',
-      borderRadius: 20, 
+      color: "white",
+      backgroundColor: "#5D5D5D",
+      borderRadius: 20,
     },
     switchContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       marginBottom: 20,
-      justifyContent: 'space-between',
+      justifyContent: "space-between",
     },
     notification: {
-      color: '#fff',
-
+      color: "#fff",
     },
-}});
-
+    buttonsContainer: {
+      fontWeight: "bold",
+      flexDirection: "row",
+      justifyContent: "space-around",
+      marginTop: 20,
+      fontSize: 20,
+    },
+    buttonContainer: {
+      borderWidth: 3,
+      borderColor: "#8F8F8F",
+      borderRadius: 24,
+      overflow: "hidden",
+    },
+  },
+});
 
 export default TaskDetailScreen;

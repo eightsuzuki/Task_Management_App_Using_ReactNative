@@ -1,16 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { Text, Alert, StyleSheet,  ImageBackground,
-  TouchableOpacity,} from 'react-native';
-import { useRoute } from '@react-navigation/native';
+import React, { useState, useEffect } from "react";
+import {
+  Text,
+  Alert,
+  StyleSheet,
+  ImageBackground,
+  TouchableOpacity,
+} from "react-native";
+import { useRoute } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-import { loadTask, updateCurrentTask } from '../utils/TaskDatabase';
-import { convertFromSQLiteDateTime, convertFromSQLiteLabels, convertToSQLiteDateTime, convertToSQLiteLabels, daysOfWeekToSQLiteInteger, SQLiteIntegerToDaysOfWeek } from '../utils/SupportDataBaseIO';
-import useTaskState, { daysOfWeek, labels }from '../utils/useTaskState';
-import TaskForm from '../styles/TaskForm';
-import { taskDetailStyles } from '../styles/taskDetailStyle';
-import { SaveTaskNotification } from '../utils/notification';
-
+import { loadTask, updateCurrentTask } from "../utils/TaskDatabase";
+import {
+  convertFromSQLiteDateTime,
+  convertFromSQLiteLabels,
+  convertToSQLiteDateTime,
+  convertToSQLiteLabels,
+  daysOfWeekToSQLiteInteger,
+  SQLiteIntegerToDaysOfWeek,
+} from "../utils/SupportDataBaseIO";
+import useTaskState, { daysOfWeek, labels } from "../utils/useTaskState";
+import TaskForm from "../styles/TaskForm";
+import { taskDetailStyles } from "../styles/taskDetailStyle";
+import { SaveTaskNotification } from "../utils/notification";
 
 const TaskUpdateScreen = ({ navigation }) => {
   const route = useRoute();
@@ -28,39 +39,39 @@ const TaskUpdateScreen = ({ navigation }) => {
     isNotification,
     setIsNotification,
     selectedLabels,
-    setSelectedLabels
+    setSelectedLabels,
   } = useTaskState();
-  
+
   navigation.setOptions({
-    headerTitle: 'Task Update', 
+    headerTitle: "Task Update",
     headerTitleStyle: {
       fontSize: 24,
     },
-    headerLeft: null, 
+    headerLeft: null,
   });
-  
-useEffect(() => {
-  const fetchData = async () => {
-    const loadedTask = await loadTask(updateTaskId);
-    if (loadedTask && loadedTask.length > 0) {
-      const task = loadedTask[0];
-      console.log(task);
-      setUpdateTask(task);
-      setTaskName(task.name);
-      setStartTime(convertFromSQLiteDateTime(task.starttime));
-      setEndTime(convertFromSQLiteDateTime(task.endtime));
-      setSelectedDays(SQLiteIntegerToDaysOfWeek(task.repeatday));
-      setSelectedLabels(convertFromSQLiteLabels(task.label));
-      setIsNotification(task.isnotification === 1);
-    }
-  };
 
-  fetchData();
-}, [updateTaskId]);
+  useEffect(() => {
+    const fetchData = async () => {
+      const loadedTask = await loadTask(updateTaskId);
+      if (loadedTask && loadedTask.length > 0) {
+        const task = loadedTask[0];
+        console.log(task);
+        setUpdateTask(task);
+        setTaskName(task.name);
+        setStartTime(convertFromSQLiteDateTime(task.starttime));
+        setEndTime(convertFromSQLiteDateTime(task.endtime));
+        setSelectedDays(SQLiteIntegerToDaysOfWeek(task.repeatday));
+        setSelectedLabels(convertFromSQLiteLabels(task.label));
+        setIsNotification(task.isnotification === 1);
+      }
+    };
 
-if (!updateTask) {
-  return <Text>loading ...</Text>;
-}
+    fetchData();
+  }, [updateTaskId]);
+
+  if (!updateTask) {
+    return <Text>loading ...</Text>;
+  }
 
   const toggleDay = (index) => {
     const updatedDays = [...selectedDays];
@@ -77,8 +88,8 @@ if (!updateTask) {
 
   const handleSaveTask = async () => {
     if (!taskName) {
-      Alert.alert('Task name must be filled');
-      return
+      Alert.alert("Task name must be filled");
+      return;
     }
     const values = [
       taskName,
@@ -88,11 +99,11 @@ if (!updateTask) {
       0,
       isNotification & 1,
       convertToSQLiteLabels(selectedLabels),
-      updateTaskId
+      updateTaskId,
     ];
     try {
       await updateCurrentTask(values);
-      Alert.alert('Success', 'Task updated successfully!');
+      Alert.alert("Success", "Task updated successfully!");
 
       const task = await loadTask(updateTaskId);
 
@@ -101,52 +112,49 @@ if (!updateTask) {
       }
 
       navigation.goBack();
-    } catch(error) {
-      Alert.alert('Error', 'Failed to update the task.' +error);
+    } catch (error) {
+      Alert.alert("Error", "Failed to update the task." + error);
     }
   };
 
   return (
     <ImageBackground
-    source={require("../../assets/timer.png")}
-    style={styles.container}
-    imageStyle={styles.backgroundImage}
-  >
-    <TaskForm
-      styles={styles.taskDetailStyles}
-      taskName={taskName}
-      setTaskName={setTaskName}
-      startTime={startTime}
-      setStartTime={setStartTime}
-      endTime={endTime}
-      setEndTime={setEndTime}
-      daysOfWeek={daysOfWeek}
-      selectedDays={selectedDays}
-      toggleDay={toggleDay}
-      labels={labels}
-      selectedLabels={selectedLabels}
-      toggleLabel={toggleLabel}
-      isNotification={isNotification}
-      setIsNotification={setIsNotification}
-      handleSaveTask={handleSaveTask}
-      navigation={navigation}
-    />
-    <TouchableOpacity
-    style={styles.taskList}
-    onPress={() => navigation.navigate("Home")}
-  >
-    <MaterialCommunityIcons
-      name="keyboard-backspace"
-      size={60}
-      color="white"
-    />
-  </TouchableOpacity>
-  </ImageBackground>
-
+      source={require("../../assets/timer.png")}
+      style={styles.container}
+      imageStyle={styles.backgroundImage}
+    >
+      <TaskForm
+        styles={styles.taskDetailStyles}
+        taskName={taskName}
+        setTaskName={setTaskName}
+        startTime={startTime}
+        setStartTime={setStartTime}
+        endTime={endTime}
+        setEndTime={setEndTime}
+        daysOfWeek={daysOfWeek}
+        selectedDays={selectedDays}
+        toggleDay={toggleDay}
+        labels={labels}
+        selectedLabels={selectedLabels}
+        toggleLabel={toggleLabel}
+        isNotification={isNotification}
+        setIsNotification={setIsNotification}
+        handleSaveTask={handleSaveTask}
+        navigation={navigation}
+      />
+      <TouchableOpacity
+        style={styles.taskList}
+        onPress={() => navigation.navigate("Home")}
+      >
+        <MaterialCommunityIcons
+          name="keyboard-backspace"
+          size={60}
+          color="white"
+        />
+      </TouchableOpacity>
+    </ImageBackground>
   );
 };
-
-
 
 const styles = StyleSheet.create({
   container: {
@@ -160,15 +168,15 @@ const styles = StyleSheet.create({
     height: "180%",
   },
   taskList: {
-    position: 'absolute',
+    position: "absolute",
     left: 30,
     bottom: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     height: 75,
     width: 75,
     borderRadius: 30,
-    backgroundColor: '#2D3F45',
+    backgroundColor: "#2D3F45",
     shadowColor: "#000",
     shadowOffset: {
       width: 5,
@@ -185,44 +193,57 @@ const styles = StyleSheet.create({
     },
     input: {
       borderWidth: 1,
-      borderColor: 'gray',
-      backgroundColor: '#fff',
+      borderColor: "gray",
+      backgroundColor: "#fff",
       padding: 10,
       marginBottom: 20,
       borderRadius: 5,
     },
     text: {
-      color: '#000',
+      color: "#000",
       fontSize: 18,
     },
     daysContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-around',
-      marginBottom: 0, 
-      padding: 20, 
+      flexDirection: "row",
+      justifyContent: "space-around",
+      marginBottom: 0,
+      padding: 20,
     },
     dayButton: {
       padding: 7,
-      color: 'black',
+      color: "black",
       borderWidth: 3,
-      borderColor: '#5D5D5D',
+      borderColor: "#5D5D5D",
       borderRadius: 20,
     },
     selectedDayButton: {
-      color: 'white',
-      backgroundColor: '#5D5D5D',
-      borderRadius: 20, 
+      color: "white",
+      backgroundColor: "#5D5D5D",
+      borderRadius: 20,
     },
     switchContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       marginBottom: 20,
-      justifyContent: 'space-between',
+      justifyContent: "space-between",
     },
     notification: {
-      color: '#fff',
-
+      color: "#fff",
     },
-}});
+    buttonsContainer: {
+      fontWeight: "bold",
+      flexDirection: "row",
+      justifyContent: "space-around",
+      marginTop: 20,
+      fontSize: 20,
+    },
+    buttonContainer: {
+      borderWidth: 3,
+      borderColor: "#8F8F8F",
+      borderRadius: 24,
+      overflow: "hidden",
+    },
+  },
+});
 
 export default TaskUpdateScreen;
