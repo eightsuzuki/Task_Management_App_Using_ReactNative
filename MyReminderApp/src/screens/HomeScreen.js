@@ -10,7 +10,7 @@ import {
   Button,
   ImageBackground,
 } from "react-native";
-import { AntDesign, Octicons } from "@expo/vector-icons";
+import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 
 import * as Notifications from "expo-notifications";
 
@@ -27,6 +27,7 @@ import {
 } from "../utils/notification";
 import { useUser } from "../utils/UserContext";
 import TaskListItem from "../styles/taskListItem";
+import { updateCommitCount } from "../utils/CommitDataBase";
 
 function HomeScreen({ navigation, route }) {
   const [tasks, setTasks] = useState([]);
@@ -66,9 +67,28 @@ function HomeScreen({ navigation, route }) {
     try {
       const tasks = await loadNonCompletionTasks(userId);
       setTasks(tasks);
-      
     } catch (error) {
       Alert.alert("Error loading tasks", error.message);
+    }
+  };
+
+  const loadEmergencyTasks = async () => {
+    try {
+      const tasks = await loadNonCompletionTasks(userId);
+      const newTasks = tasks.filter((task) => task.label & (1 << 1));
+      setTasks(newTasks);
+    } catch (error) {
+      Alert.alert("Error loading tasks labeled emergency", error.message);
+    }
+  };
+
+  const loadRoutineTasks = async () => {
+    try {
+      const tasks = await loadNonCompletionTasks(userId);
+      const newTasks = tasks.filter((task) => task.label & 1);
+      setTasks(newTasks);
+    } catch (error) {
+      Alert.alert("Error loading tasks labeled routine", error.message);
     }
   };
 
@@ -84,8 +104,8 @@ function HomeScreen({ navigation, route }) {
 
   const statusUpdate = async (newStatus, id) => {
     // Set notifications
-    if(newStatus) {
-      try{
+    if (newStatus) {
+      try {
         await cancelScheduledNotification(String(id));
       } catch (error) {
         Alert.alert("Error", error.message);
@@ -101,13 +121,17 @@ function HomeScreen({ navigation, route }) {
       }
     }
     // Update task status
-    values = [newStatus ? 1: 0, id];
+    values = [newStatus ? 1 : 0, id];
     try {
       await changeTaskStatus(values);
       await loadTasks();
     } catch (error) {
       Alert.alert("Error", error.message);
     }
+
+    // increment commit count
+    const currentDate = new Date().toISOString().slice(0, 10);
+    updateCommitCount(currentDate);
   };
 
   const requestPermissionsAsync = async () => {
@@ -140,24 +164,44 @@ function HomeScreen({ navigation, route }) {
           />
         )}
       />
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          onPress={() => loadRoutineTasks()}
+          style={[styles.button, styles.buttonBackground2]}
+        >
+          <View style={styles.buttonContent}>
+            <Text style={styles.buttonText}>Routine</Text>
+          </View>
+        </TouchableOpacity>
 
+        <TouchableOpacity
+          onPress={() => loadEmergencyTasks()}
+          style={[styles.button, styles.buttonBackground1]}
+        >
+          <View style={styles.buttonContent}>
+            <Text style={styles.buttonText}>Emergency</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
       <TouchableOpacity
-        style={styles.completeTasksButtonBase}
         onPress={() =>
           navigation.navigate("CompleteTaskList", { userId: userId })
         }
+        style={[styles.button, styles.completeTasksButtonBase]}
       >
         <View style={styles.completeTasksButton}>
           <AntDesign name="check" size={40} color="white" />
           <Text style={styles.completeTasksText}>Completed Tasks</Text>
         </View>
       </TouchableOpacity>
-      <TouchableOpacity 
-        style={styles.addButton} 
-        onPress={() => navigation.navigate('TaskDetail', { userId: userId })}
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => navigation.navigate("TaskDetail", { userId: userId })}
       >
         <AntDesign name="pluscircle" size={85} color="#2D3F45" />
       </TouchableOpacity>
+
+
     </ImageBackground>
   );
 }
@@ -166,7 +210,7 @@ const styles = StyleSheet.create({
   line: {
     borderBottomColor: "#B3B3B3",
     borderBottomWidth: 3,
-    marginBottom: 10, 
+    marginBottom: 10,
   },
   container: {
     flex: 1,
@@ -205,9 +249,9 @@ const styles = StyleSheet.create({
     bottom: 30,
     alignItems: "center",
     justifyContent: "center",
-    height: 85, 
-    width: 85, 
-    borderRadius: 60, 
+    height: 85,
+    width: 85,
+    borderRadius: 60,
     backgroundColor: "white",
     shadowColor: "#000",
     shadowOffset: {
@@ -236,7 +280,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: 200,
     borderRadius: 30,
-    backgroundColor: "#2D3F45", 
+    backgroundColor: "#2D3F45",
   },
   completeTasksButton: {
     flexDirection: "row",
@@ -250,9 +294,9 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   flatListContainer: {
-    flexGrow: 1, 
+    flexGrow: 1,
     marginTop: 5,
-    marginBottom: 5, 
+    marginBottom: 5,
   },
   actionsContainer: {
     flexDirection: "column",
@@ -264,10 +308,74 @@ const styles = StyleSheet.create({
   },
   actionItem: {
     flexDirection: "row",
-    justifyContent: "space-between", 
-    marginTop: 10, 
+    justifyContent: "space-between",
+    marginTop: 10,
     marginRight: 10,
     marginLeft: 10,
+  },
+  achivement: {
+    position: "absolute",
+    right: 30,
+    bottom: 70,
+    alignItems: "center",
+    justifyContent: "center",
+    height: 85, // 大きさを変更
+    width: 85, // 大きさを変更
+    borderRadius: 60, // 丸みを帯びた四角にする
+    backgroundColor: "white",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 5,
+      height: 5,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 0,
+  },
+  buttonContainer: {
+    flexDirection: "column",
+    alignItems: "stretch",
+    marginHorizontal: 20,
+    marginLeft: 33,
+    marginBottom: 90, // Decreased marginBottom to move the button container higher
+  },
+
+  button: {
+    height: 50,
+    width: 100, // ボタンの横幅を150に変更
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 30,
+    marginBottom: 10,
+  },
+  buttonContent: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  buttonText: {
+    fontWeight: "bold",
+    color: "white",
+    marginLeft: 5,
+  },
+  completeTasksButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  completeTasksText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+    marginLeft: 5,
+  },
+  buttonBackground1: {
+    backgroundColor: "#A90000",
+  },
+  buttonBackground2: {
+    backgroundColor: "#00A600",
+  },
+  buttonBackground3: {
+    backgroundColor: "#2D3F45",
   },
 });
 

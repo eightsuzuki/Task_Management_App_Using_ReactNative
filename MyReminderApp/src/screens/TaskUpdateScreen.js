@@ -5,8 +5,8 @@ import { useRoute } from '@react-navigation/native';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { loadTask, updateCurrentTask } from '../utils/TaskDatabase';
-import { convertFromSQLiteDateTime, convertToSQLiteDateTime, daysOfWeekToSQLiteInteger, SQLiteIntegerToDaysOfWeek } from '../utils/SupportDataBaseIO';
-import useTaskState, { daysOfWeek }from '../utils/useTaskState';
+import { convertFromSQLiteDateTime, convertFromSQLiteLabels, convertToSQLiteDateTime, convertToSQLiteLabels, daysOfWeekToSQLiteInteger, SQLiteIntegerToDaysOfWeek } from '../utils/SupportDataBaseIO';
+import useTaskState, { daysOfWeek, labels }from '../utils/useTaskState';
 import TaskForm from '../styles/TaskForm';
 import { taskDetailStyles } from '../styles/taskDetailStyle';
 import { SaveTaskNotification } from '../utils/notification';
@@ -26,7 +26,9 @@ const TaskUpdateScreen = ({ navigation }) => {
     selectedDays,
     setSelectedDays,
     isNotification,
-    setIsNotification
+    setIsNotification,
+    selectedLabels,
+    setSelectedLabels
   } = useTaskState();
   
   navigation.setOptions({
@@ -42,11 +44,13 @@ useEffect(() => {
     const loadedTask = await loadTask(updateTaskId);
     if (loadedTask && loadedTask.length > 0) {
       const task = loadedTask[0];
+      console.log(task);
       setUpdateTask(task);
       setTaskName(task.name);
       setStartTime(convertFromSQLiteDateTime(task.starttime));
       setEndTime(convertFromSQLiteDateTime(task.endtime));
       setSelectedDays(SQLiteIntegerToDaysOfWeek(task.repeatday));
+      setSelectedLabels(convertFromSQLiteLabels(task.label));
       setIsNotification(task.isnotification === 1);
     }
   };
@@ -64,6 +68,13 @@ if (!updateTask) {
     setSelectedDays(updatedDays);
   };
 
+  const toggleLabel = (index) => {
+    const updatedLabels = [...selectedLabels];
+    updatedLabels[index] = !updatedLabels[index];
+    setSelectedLabels(updatedLabels);
+    console.log(updatedLabels);
+  };
+
   const handleSaveTask = async () => {
     if (!taskName) {
       Alert.alert('Task name must be filled');
@@ -76,6 +87,7 @@ if (!updateTask) {
       daysOfWeekToSQLiteInteger(selectedDays),
       0,
       isNotification & 1,
+      convertToSQLiteLabels(selectedLabels),
       updateTaskId
     ];
     try {
@@ -111,6 +123,9 @@ if (!updateTask) {
       daysOfWeek={daysOfWeek}
       selectedDays={selectedDays}
       toggleDay={toggleDay}
+      labels={labels}
+      selectedLabels={selectedLabels}
+      toggleLabel={toggleLabel}
       isNotification={isNotification}
       setIsNotification={setIsNotification}
       handleSaveTask={handleSaveTask}

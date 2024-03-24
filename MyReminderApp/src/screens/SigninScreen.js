@@ -1,37 +1,46 @@
-import React from 'react';
-import { View, Button, StyleSheet, Alert } from 'react-native';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { getAuth, GoogleAuthProvider, signInWithCredential } from "firebase/auth";
-import { useUser } from '../utils/UserContext';
-
-// GoogleSigninの設定
-GoogleSignin.configure({
-  webClientId: '748710972974-pqkqe1ra5j9vu6cb5nse7m438uj337an.apps.googleusercontent.com',
-});
+import React, { useState } from 'react';
+import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { addUser } from '../utils/UserDatabase';
 
 function SignInScreen({ navigation }) {
-  const { setUserId } = useUser();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
-  const handleGoogleSignIn = async () => {
+  const handleSignIn = async () => {
+
+    if (!username.trim() || !password) {
+      Alert.alert('Invalid Input', 'Please enter both a username and a password.');
+      return;
+    }
+    
+
     try {
-      await GoogleSignin.hasPlayServices();
-      const { idToken } = await GoogleSignin.signIn();
-      const googleCredential = GoogleAuthProvider.credential(idToken);
-      const auth = getAuth();
-      const userCredential = await signInWithCredential(auth, googleCredential);
-      setUserId(userCredential.user.uid);
-      // サインイン成功時にホーム画面へナビゲート
-      navigation.navigate('Home');
+      await addUser([username, password]);
+      Alert.alert('Success', 'Account created successfully. Please log in.');
+      navigation.navigate('Login');
     } catch (error) {
-      // サインインエラー時の処理
-      Alert.alert('Google Sign-In Error', error.message);
+      Alert.alert('Error', 'Could not create account. The username may already exist.');
     }
   };
 
+
   return (
     <View style={styles.container}>
+      <TextInput
+        placeholder="Username"
+        style={styles.input}
+        value={username}
+        onChangeText={setUsername}
+      />
+      <TextInput
+        placeholder="Password"
+        style={styles.input}
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+      />
       <View style={styles.buttonContainer}>
-        <Button title="Sign In with Google" onPress={handleGoogleSignIn} color="white" />
+        <Button title="Sign In" onPress={handleSignIn} color="white" />
       </View>
     </View>
   );
@@ -44,11 +53,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     backgroundColor: "#D9D9D9",
+
+  },
+  input: {
+    width: '100%',
+    marginVertical: 10,
+    padding: 10,
+    borderWidth: 1,
+    borderRadius: 5,
+    borderColor: 'black',
   },
   buttonContainer: {
-    backgroundColor: "#2D3F45",
-    padding: 10,
-    borderRadius: 5,
+    backgroundColor: "#2D3F45", 
+    borderRadius: 24,
+    overflow: "hidden",
+
   },
 });
 

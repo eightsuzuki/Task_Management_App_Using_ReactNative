@@ -11,17 +11,24 @@ import TitleScreen from '../screens/TitleScreen';
 import TaskDetailScreen from '../screens/TaskDetailScreen';
 import TaskUpdateScreen from '../screens/TaskUpdateScreen';
 import CompleteTaskList from '../screens/CompleteTaskList';
+import AchievementScreen from '../screens/AchivementScreen';
 
-import { createTable, deleteSelectedTask, dropTasksTable } from '../utils/TaskDatabase';
+import { createTable, dropTasksTable } from '../utils/TaskDatabase';
+import { createUsersTable, dropUsersTable } from '../utils/UserDatabase';
 import taskStatusUpdate from '../utils/TaskStatusUpdate';
+import { createCommitTable, dropCommitsTable } from '../utils/CommitDataBase';
 
 const Stack = createStackNavigator();
 
 function AppNavigation() {
   useEffect(() => {
     dropTasksTable();
+    dropUsersTable();
+    dropCommitsTable();
+    createCommitTable();
     createTable();
     taskStatusUpdate();
+    createUsersTable();
     registerForPushNotificationsAsync();
 
     return () => {
@@ -65,6 +72,7 @@ function AppNavigation() {
         <Stack.Screen name="TaskDetail" component={TaskDetailScreen} />
         <Stack.Screen name="TaskUpdate" component={TaskUpdateScreen} />
         <Stack.Screen name="CompleteTaskList" component={CompleteTaskList} />
+        <Stack.Screen name="Achivement" component={AchievementScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

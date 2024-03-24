@@ -2,6 +2,16 @@ import React from "react";
 import { View, Text, Switch, TouchableOpacity, StyleSheet } from "react-native";
 import { AntDesign, Octicons } from "@expo/vector-icons";
 
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const month = date.getMonth() + 1; // getMonth()は0から始まるため、+1する
+  const day = date.getDate();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+
+  return `${month}/${day} ${hours}:${minutes < 10 ? "0" : ""}${minutes}`;
+};
+
 const TaskListItem = ({
   styles,
   item,
@@ -21,35 +31,51 @@ const TaskListItem = ({
           <View style={styles.line}></View>
         </View>
         <View>
-          <Text style={{ fontSize: 18 }}>Start Time</Text>
-          <Text style={{ fontSize: 28 }}>{`${item.starttime}`}</Text>
-          <Text style={{ fontSize: 18 }}>End Time</Text>
-          <Text style={{ fontSize: 28 }}>{`${item.endtime}`}</Text>
-          <Text style={{ fontSize: 18 }}>{`Repeat: ${
-            item.repeat
-              ? daysOfWeek
-                  .filter(
-                    (day, index) => item.repeatDay && item.repeatDay[index]
-                  )
-                  .map((day, index) => daysOfWeek[index])
-                  .join("・")
-              : "No Repeat"
-          }`}</Text>
+          <View style={{ flexDirection: "row" }}>
+            <Text style={{ fontSize: 18, marginRight: 5 }}>Start Time </Text>
+            <Text style={{ fontSize: 28 }}>{formatDate(item.starttime)}</Text>
+          </View>
+          <View style={{ flexDirection: "row" }}>
+            <Text style={{ fontSize: 18, marginRight: 5 }}>End Time   </Text>
+            <Text style={{ fontSize: 28 }}>{formatDate(item.endtime)}</Text>
+          </View>
+          <Text style={{ fontSize: 20 }}>
+            Repeat:{" "}
+            {item.repeatday ? (
+              <>
+                {daysOfWeek
+                  .filter((day, index) => item.repeatday & (1 << index))
+                  .slice(0, 3)
+                  .join(", ")}
+                {"\n"}
+                {daysOfWeek
+                  .filter((day, index) => item.repeatday & (1 << index))
+                  .slice(3)
+                  .join(", ")}
+              </>
+            ) : (
+              "No Repeat"
+            )}
+          </Text>
         </View>
       </View>
       <View style={styles.actionsContainer}>
+        <View>
+          {item.label === 1 ? (
+            <Text style={{ fontSize: 25 }}>routine</Text>
+          ) : null}
+          {item.label === 2 ? (
+            <Text style={{ fontSize: 25 }}>emergency</Text>
+          ) : null}
+          {item.label === 0 ? <Text style={{ fontSize: 25 }}> </Text> : null}
+        </View>
+
         <View style={styles.complete}>
           <Switch
             value={item.status ? true : false}
             onValueChange={(newValue) => statusUpdate(newValue, item.id)}
           />
-          <Text>Uncomplete</Text>
-        </View>
-        <View>
-          <Text> </Text>
-        </View>
-        <View>
-          <Text> </Text>
+          <Text>{item.status ? "Completed" : "Incomplete"}</Text>
         </View>
         <View style={styles.actionItem}>
           <TouchableOpacity
@@ -86,15 +112,15 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
     width: "100%",
     height: "180%",
-  },
-  taskItem: {
+  },  taskItem: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     backgroundColor: "#fff",
-    padding: 15,
-    marginVertical: 8,
-    marginHorizontal: 16,
+    padding: 10,
+    paddingHorizontal: 10, // 左右の余白を設定します
+    paddingVertical: 10, // 上下の余白を設定します
+    marginVertical: 0,
     borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: {
@@ -106,9 +132,9 @@ const styles = StyleSheet.create({
     elevation: 0,
   },
   flatListContainer: {
-    flexGrow: 1, 
-    marginTop: 5, 
-    marginBottom: 5, 
+    flexGrow: 1,
+    marginTop: 5,
+    marginBottom: 5,
   },
   actionsContainer: {
     flexDirection: "column",
@@ -116,10 +142,10 @@ const styles = StyleSheet.create({
   },
   actionItem: {
     flexDirection: "row",
-    justifyContent: "space-between", 
-    marginTop: 10, 
-    marginRight: 10,
-    marginLeft: 10,
+    justifyContent: "space-between",
+    marginTop: 0,
+    marginRight: 0,
+    marginLeft: 0,
   },
 });
 

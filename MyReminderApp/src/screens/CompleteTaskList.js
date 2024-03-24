@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
+  Dimensions,
+  SafeAreaView,
   FlatList,
   StyleSheet,
   Button,
@@ -10,7 +12,8 @@ import {
 } from "react-native";
 import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 import * as Notifications from "expo-notifications";
-
+import { ContributionGraph } from "react-native-chart-kit";
+import { loadCommitData } from "../utils/CommitDataBase";
 import {
   deleteSelectedTask,
   changeTaskStatus,
@@ -20,10 +23,64 @@ import { useUser } from "../utils/UserContext";
 import TaskListItem from "../styles/taskListItem";
 
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const chartConfig = {
+  backgroundGradientFrom: "#EBEDF0",
+  backgroundGradientTo: "#EBEDF0",
+  decimalPlaces: 2,
+  color: (opacity = 1) => `rgba(11, 156, 49, ${opacity})`,
+  labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+  style: {
+    borderRadius: 16,
+  },
+};
 
 function CompleteTaskList({ navigation, route }) {
   const [tasks, setTasks] = useState([]);
   const { userId } = useUser();
+  const [commits, setCommits] = useState([]);
+  const formatter = new Intl.DateTimeFormat("ja-JP", {
+    timeZone: "Asia/Tokyo",
+    hour12: false,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+
+  const now = new Date();
+  const offsetMinutes = now.getTimezoneOffset();
+  const nowInLocalTimezone = new Date(now.getTime() - (offsetMinutes * 60 * 1000));
+  const currentDate = nowInLocalTimezone.toISOString().slice(0, 10);
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      loadCommits();
+    });
+
+
+    return unsubscribe;
+  }, [navigation]);
+
+  const screenWidth = Dimensions.get('window').width;
+  const tooltipDataAttrs = ({ value }) => {
+    if (value >= 10) {
+      return {
+        fill: 'green',
+      };
+    }
+    return {};
+  };
+
+  const loadCommits = async () => {
+    try {
+      const commits = await loadCommitData(currentDate);
+      setCommits(commits);
+      console.log(commits)
+    } catch (error) {
+      Alert.alert("Error loading Commits", error.message);
+    }
+  };
 
   useEffect(() => {
     navigation.addListener("focus", () => {
@@ -43,11 +100,11 @@ function CompleteTaskList({ navigation, route }) {
       <Button
         onPress={() => {
           Alert.alert("Logout", "You have been logged out.", [
-            { text: "OK", onPress: () => navigation.navigate("Title") }, 
+            { text: "OK", onPress: () => navigation.navigate("Title") },
           ]);
         }}
         title="Logout"
-        color="#FFF" 
+        color="#FFF"
       />
     ),
   });
@@ -97,6 +154,18 @@ function CompleteTaskList({ navigation, route }) {
       style={styles.container}
       imageStyle={styles.backgroundImage}
     >
+{/* 
+    <SafeAreaView style={styles.container}>
+      <ContributionGraph
+        values={commits}
+        endDate={nowInLocalTimezone}
+        numDays={105}
+        width={screenWidth}
+        height={220}
+        chartConfig={chartConfig}
+        tooltipDataAttrs={tooltipDataAttrs}
+      />
+    </SafeAreaView> */}
       <FlatList
         data={tasks}
         keyExtractor={(item) => item.id.toString()}
@@ -121,6 +190,12 @@ function CompleteTaskList({ navigation, route }) {
           color="white"
         />
       </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.achivement}
+        onPress={() => navigation.navigate("Achivement")}
+      >
+        <AntDesign name="github" size={85} color="#2D3F45" />
+      </TouchableOpacity>
 
     </ImageBackground>
   );
@@ -130,7 +205,7 @@ const styles = StyleSheet.create({
   line: {
     borderBottomColor: "#B3B3B3",
     borderBottomWidth: 3,
-    marginBottom: 10, 
+    marginBottom: 10,
   },
   container: {
     flex: 1,
@@ -169,9 +244,9 @@ const styles = StyleSheet.create({
     bottom: 30,
     alignItems: "center",
     justifyContent: "center",
-    height: 85, 
-    width: 85, 
-    borderRadius: 60, 
+    height: 85,
+    width: 85,
+    borderRadius: 60,
     backgroundColor: "white",
     shadowColor: "#000",
     shadowOffset: {
@@ -200,7 +275,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: 200,
     borderRadius: 30,
-    backgroundColor: "#2D3F45", 
+    backgroundColor: "#2D3F45",
   },
   completeTasksButton: {
     flexDirection: "row",
@@ -211,12 +286,12 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
-    marginLeft: 5, 
+    marginLeft: 5,
   },
   flatListContainer: {
-    flexGrow: 1, 
-    marginTop: 5, 
-    marginBottom: 5, 
+    flexGrow: 1,
+    marginTop: 5,
+    marginBottom: 5,
   },
   actionsContainer: {
     flexDirection: "column",
@@ -224,11 +299,11 @@ const styles = StyleSheet.create({
   },
   complete: {
     marginVertical: 10,
-    alignItems: "center", 
+    alignItems: "center",
   },
   actionItem: {
     flexDirection: "row",
-    justifyContent: "space-between", 
+    justifyContent: "space-between",
     marginTop: 10,
     marginRight: 10,
     marginLeft: 10,
@@ -244,6 +319,25 @@ const styles = StyleSheet.create({
     width: 75,
     borderRadius: 30,
     backgroundColor: "#2D3F45",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 5,
+      height: 5,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 0,
+  },
+  achivement:   {
+    position: "absolute",
+    right: 30,
+    bottom: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    height: 85,
+    width: 85,
+    borderRadius: 60,
+    backgroundColor: "white",
     shadowColor: "#000",
     shadowOffset: {
       width: 5,
