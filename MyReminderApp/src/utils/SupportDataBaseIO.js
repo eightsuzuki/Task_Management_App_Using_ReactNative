@@ -40,14 +40,12 @@ export const convertFromSQLiteDateTime = (dateTimeString) => {
 };
 
 export const convertFromSQLiteLabels = (label) => {
-  console.log("Called");
   let selectedDays = new Array(2).fill(false);
   for (let i=0; i<2; i++){
     if (label & 1 << i){
       selectedDays[i] = true;
     }
   }
-  console.log(selectedDays);
   return selectedDays;
 }
 

@@ -55,7 +55,6 @@ const TaskUpdateScreen = ({ navigation }) => {
       const loadedTask = await loadTask(updateTaskId);
       if (loadedTask && loadedTask.length > 0) {
         const task = loadedTask[0];
-        console.log(task);
         setUpdateTask(task);
         setTaskName(task.name);
         setStartTime(convertFromSQLiteDateTime(task.starttime));
@@ -83,7 +82,6 @@ const TaskUpdateScreen = ({ navigation }) => {
     const updatedLabels = [...selectedLabels];
     updatedLabels[index] = !updatedLabels[index];
     setSelectedLabels(updatedLabels);
-    console.log(updatedLabels);
   };
 
   const handleSaveTask = async () => {
