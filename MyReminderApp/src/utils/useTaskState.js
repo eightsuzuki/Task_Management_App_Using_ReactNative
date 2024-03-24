@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 export const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+export const labels = ['routine', 'emergency'];
 
 const useTaskState = () => {
   const [taskName, setTaskName] = useState('');
@@ -8,6 +9,7 @@ const useTaskState = () => {
   const [endTime, setEndTime] = useState(new Date());
   const [selectedDays, setSelectedDays] = useState(new Array(7).fill(false));
   const [isNotification, setIsNotification] = useState(false);
+  const [selectedLabels, setSelectedLabels] = useState([true, false]);
 
   return {
     taskName,
@@ -19,7 +21,9 @@ const useTaskState = () => {
     selectedDays,
     setSelectedDays,
     isNotification,
-    setIsNotification
+    setIsNotification,
+    selectedLabels,
+    setSelectedLabels
   };
 };
 

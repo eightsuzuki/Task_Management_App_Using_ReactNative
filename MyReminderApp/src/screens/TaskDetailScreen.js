@@ -11,9 +11,10 @@ import { useRoute } from '@react-navigation/native';
 import { addTasks, getMaxId, loadTask } from "../utils/TaskDatabase";
 import {
   convertToSQLiteDateTime,
+  convertToSQLiteLabels,
   daysOfWeekToSQLiteInteger,
 } from "../utils/SupportDataBaseIO";
-import useTaskState, { daysOfWeek } from "../utils/useTaskState";
+import useTaskState, { daysOfWeek, labels } from "../utils/useTaskState";
 import TaskForm from "../styles/TaskForm";
 import { SaveTaskNotification } from "../utils/notification";
 
@@ -31,12 +32,21 @@ const TaskDetailScreen = ({ navigation }) => {
     setSelectedDays,
     isNotification,
     setIsNotification,
+    selectedLabels,
+    setSelectedLabels
   } = useTaskState();
 
   const toggleDay = (index) => {
     const updatedDays = [...selectedDays];
     updatedDays[index] = !updatedDays[index];
     setSelectedDays(updatedDays);
+  };
+
+  const toggleLabel = (index) => {
+    const updatedLabels = [...selectedLabels];
+    updatedLabels[index] = !updatedLabels[index];
+    setSelectedLabels(updatedLabels);
+    console.log(updatedLabels);
   };
 
   navigation.setOptions({
@@ -60,6 +70,7 @@ const TaskDetailScreen = ({ navigation }) => {
         daysOfWeekToSQLiteInteger(selectedDays),
         0,
         isNotification & 1,
+        convertToSQLiteLabels(selectedLabels),
         userId
       ];
       await addTasks(values);
@@ -96,6 +107,9 @@ const TaskDetailScreen = ({ navigation }) => {
         daysOfWeek={daysOfWeek}
         selectedDays={selectedDays}
         toggleDay={toggleDay}
+        labels={labels}
+        selectedLabels={selectedLabels}
+        toggleLabel={toggleLabel}
         isNotification={isNotification}
         setIsNotification={setIsNotification}
         handleSaveTask={handleSaveTask}

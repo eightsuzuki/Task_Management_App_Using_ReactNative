@@ -38,3 +38,25 @@ export const convertFromSQLiteDateTime = (dateTimeString) => {
   const [hours, minutes] = timePart.split(':').map(Number);
   return new Date(year, month - 1, day, hours, minutes);
 };
+
+export const convertFromSQLiteLabels = (label) => {
+  console.log("Called");
+  let selectedDays = new Array(2).fill(false);
+  for (let i=0; i<2; i++){
+    if (label & 1 << i){
+      selectedDays[i] = true;
+    }
+  }
+  console.log(selectedDays);
+  return selectedDays;
+}
+
+export const convertToSQLiteLabels = (selectedLabels) => {
+  let cnt = 0;
+  for (let i=0; i<7; i++){
+    if (selectedLabels[i] === true){
+      cnt += 1 << i;
+    }
+  }
+  return cnt;
+}

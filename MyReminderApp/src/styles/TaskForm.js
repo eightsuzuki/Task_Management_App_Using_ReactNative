@@ -2,7 +2,7 @@ import React from 'react';
 import { View, TextInput, Button, Text, Switch } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-const TaskForm = ({ styles, taskName, setTaskName, startTime, setStartTime, endTime, setEndTime, daysOfWeek, selectedDays, toggleDay, isNotification, setIsNotification, repeat, setRepeat, handleSaveTask, navigation }) => {
+const TaskForm = ({ styles, taskName, setTaskName, startTime, setStartTime, endTime, setEndTime, daysOfWeek, selectedDays, toggleDay, isNotification, setIsNotification, handleSaveTask, navigation, labels, selectedLabels, toggleLabel}) => {
   return (
     <View style={styles.container}>
       <TextInput
@@ -39,6 +39,13 @@ const TaskForm = ({ styles, taskName, setTaskName, startTime, setStartTime, endT
         {daysOfWeek.map((day, index) => (
           <Text key={index} onPress={() => toggleDay(index)} style={[styles.dayButton, selectedDays[index] && styles.selectedDayButton]}>
             {day}
+          </Text>
+        ))}
+      </View>
+      <View style={styles.daysContainer}>
+        {labels.map((label, index) => (
+          <Text key={index} onPress={() => toggleLabel(index)} style={[styles.dayButton, selectedLabels[index] && styles.selectedDayButton]}>
+            {label}
           </Text>
         ))}
       </View>

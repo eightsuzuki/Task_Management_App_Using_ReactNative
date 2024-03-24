@@ -33,6 +33,7 @@ export const createTable = () => {
         repeatday INTEGER, \
         status INTEGER, \
         isnotification INTEGER, \
+        label INTEGER, \
         userId INTEGER \
         )'
     );
@@ -131,8 +132,8 @@ export const addTasks = (values) => {
     db.transaction(tx => {
       tx.executeSql(
         `
-        INSERT INTO tasks (name, starttime, endtime, repeatday, status, isnotification, userid)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO tasks (name, starttime, endtime, repeatday, status, isnotification, label, userid)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         `,
         values,
         (_, result) => {
@@ -152,7 +153,7 @@ export const updateCurrentTask = (values) => {
       tx.executeSql(
         `
       UPDATE tasks \
-      SET name = ?, starttime = ?, endtime = ?, repeatday = ?, status = ? , isnotification = ?\
+      SET name = ?, starttime = ?, endtime = ?, repeatday = ?, status = ?, isnotification = ?, label = ?\
       WHERE id = ?
     `,
         values,

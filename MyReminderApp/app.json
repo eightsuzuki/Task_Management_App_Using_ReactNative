@@ -15,8 +15,7 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.yourcompany.MyReminderApp"
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
