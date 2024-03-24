@@ -76,7 +76,6 @@ function CompleteTaskList({ navigation, route }) {
     try {
       const commits = await loadCommitData(currentDate);
       setCommits(commits);
-      console.log(commits)
     } catch (error) {
       Alert.alert("Error loading Commits", error.message);
     }

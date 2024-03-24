@@ -46,7 +46,6 @@ const TaskDetailScreen = ({ navigation }) => {
     const updatedLabels = [...selectedLabels];
     updatedLabels[index] = !updatedLabels[index];
     setSelectedLabels(updatedLabels);
-    console.log(updatedLabels);
   };
 
   navigation.setOptions({
