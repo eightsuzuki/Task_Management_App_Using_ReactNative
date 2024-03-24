@@ -91,6 +91,15 @@ function HomeScreen({ navigation, route }) {
       Alert.alert("Error loading tasks labeled routine", error.message);
     }
   };
+  
+  const loadAllTasks = async () => {
+    try {
+      const tasks = await loadNonCompletionTasks(userId);
+      setTasks(tasks);
+    } catch (error) {
+      Alert.alert("Error loading tasks", error.message);
+    }
+  };
 
   const deleteTask = async (id) => {
     try {
@@ -164,25 +173,36 @@ function HomeScreen({ navigation, route }) {
           />
         )}
       />
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          onPress={() => loadRoutineTasks()}
-          style={[styles.button, styles.buttonBackground2]}
-        >
-          <View style={styles.buttonContent}>
-            <Text style={styles.buttonText}>Routine</Text>
-          </View>
-        </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => loadEmergencyTasks()}
-          style={[styles.button, styles.buttonBackground1]}
-        >
-          <View style={styles.buttonContent}>
-            <Text style={styles.buttonText}>Emergency</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            onPress={() => loadRoutineTasks()}
+            style={[styles.button, styles.buttonBackground2]}
+          >
+            <View style={styles.buttonContent}>
+              <Text style={styles.buttonText}>Routine</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => loadEmergencyTasks()}
+            style={[styles.button, styles.buttonBackground1]}
+          >
+            <View style={styles.buttonContent}>
+              <Text style={styles.buttonText}>Emergency</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => loadAllTasks()}
+            style={[styles.button, styles.buttonBackground3]}
+          >
+            <View style={styles.buttonContent}>
+              <Text style={styles.buttonText}>all</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      </TouchableOpacity>
       <TouchableOpacity
         onPress={() =>
           navigation.navigate("CompleteTaskList", { userId: userId })
@@ -194,14 +214,13 @@ function HomeScreen({ navigation, route }) {
           <Text style={styles.completeTasksText}>Completed Tasks</Text>
         </View>
       </TouchableOpacity>
+
       <TouchableOpacity
         style={styles.addButton}
         onPress={() => navigation.navigate("TaskDetail", { userId: userId })}
       >
         <AntDesign name="pluscircle" size={85} color="#2D3F45" />
       </TouchableOpacity>
-
-
     </ImageBackground>
   );
 }
@@ -342,7 +361,7 @@ const styles = StyleSheet.create({
 
   button: {
     height: 50,
-    width: 100, // ボタンの横幅を150に変更
+    width: 100,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 30,
@@ -369,12 +388,18 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   buttonBackground1: {
+    position: "absolute",
+    bottom: 0,
     backgroundColor: "#A90000",
   },
   buttonBackground2: {
+    position: "absolute",
+    bottom: 55,
     backgroundColor: "#00A600",
   },
   buttonBackground3: {
+    position: "absolute",
+    bottom: 110,
     backgroundColor: "#2D3F45",
   },
 });
