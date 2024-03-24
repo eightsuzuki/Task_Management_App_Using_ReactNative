@@ -4,7 +4,7 @@
 TaskHub is a task management app created during a Supporters hackathon. It was developed as an experience to explore React Native for the first time. TaskHub combines a routine timer and a todo app to help users fully commit to tasks without depleting memory or attention in their busy daily lives.
 
 <p align="center"> 
-    <img width="400" alt="AppImage" src="images/AppImage.png"> 
+    <img width="800" alt="AppImage" src="images/AppImage.png"> 
 </p>
 
 ## Background and Problem Statement
