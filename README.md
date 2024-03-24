@@ -39,6 +39,7 @@ To start simulating the app, run the following command:
 
 ```bash
 cd TaskHub
+npm install
 expo start
 ```
 
